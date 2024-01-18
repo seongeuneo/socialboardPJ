@@ -30,12 +30,12 @@ public class LoginController {
 		String access_token = kakao.getAccessToken(code);
         System.out.println("controller access_token : " + access_token);
         
-        Map<String, Object> userInfo = kakao.getUserInfo(access_token);
-        //System.out.println(userInfo.get("username"));
-        //System.out.println(userInfo.get("useremail"));
-        //System.out.println(userInfo.get("userphone"));
-        System.out.println("nickname : " + userInfo.get("nickname"));
-	    return "home";
+        if(kakao.getUserInfo(access_token).equals("success")) {
+        	return "redirect:/home";
+        } else {
+        	return "redirect:/social/loginPage";
+        }
+	
 	}
 	
 
