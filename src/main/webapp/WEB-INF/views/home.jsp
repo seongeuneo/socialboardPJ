@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>소셜로그인</title>
 </head>
 <body>
 	<c:if test="${not empty sessionScope.loginUser}">
