@@ -3,6 +3,7 @@ package com.se.social.service;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -52,11 +53,19 @@ public class LoginService {
     		  redirectURI = URLEncoder.encode("http://localhost:8080/social/klogin", "UTF-8");
     		  apiURL = "https://kauth.kakao.com/oauth/token?grant_type=authorization_code";
     		  apiURL += "&client_id=515f074d94d08d53795260fee493bc31";
-    		  apiURL += "&redirect_uri=http://localhost:8080/social/klogin";
     		  apiURL += "&client_secret=RVDWbm6lKZKGvIWciR483xICAK498B4d";
+    		  apiURL += "&redirect_uri=http://localhost:8080/social/klogin";
     		  apiURL += "&code=" + code;
     		  
-    	  }
+    	  } else if ("google".equals(gate)) {
+              // 구글 로그인 정보
+              redirectURI = URLEncoder.encode("http://localhost:8080/social/glogin", "UTF-8");
+              apiURL = "https://oauth2.googleapis.com/token?grant_type=authorization_code";
+              apiURL += "&client_id=" + "818157184722-b70nfa4smf81ib1orm36arjfgfspfujp.apps.googleusercontent.com";
+              apiURL += "&client_secret=" + "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";
+              apiURL += "&redirect_uri=" + "http://localhost:8080/social/glogin";
+              apiURL += "&code=" + code;
+          }
     	  
          System.out.println("apiURL=" + apiURL);
          
@@ -64,6 +73,13 @@ public class LoginService {
          URL url = new URL(apiURL);
          HttpURLConnection con = (HttpURLConnection) url.openConnection();
          con.setRequestMethod("POST");
+         con.setRequestProperty("Content-Length", "1");
+         con.setDoOutput(true);
+         OutputStream outputStream = con.getOutputStream();
+         outputStream.write(" ".getBytes());
+         outputStream.flush();
+         outputStream.close();
+         
          int responseCode = con.getResponseCode();
          BufferedReader br;
          System.out.print("responseCode=" + responseCode);
@@ -113,6 +129,8 @@ public class LoginService {
 		   apiURL = "https://openapi.naver.com/v1/nid/me";
 	   } else if("kakao".equals(gate)) {
 		   apiURL = "https://kapi.kakao.com/v2/user/me";
+	   } else if("google".equals(gate)) {
+		   apiURL = "https://www.googleapis.com/oauth2/v3/userinfo";
 	   }
 	   
 	      String headerStr = "Bearer " + accessToken; // Bearer 다음에 공백 추가
@@ -135,10 +153,15 @@ public class LoginService {
 	    	  nickname = element.getAsJsonObject().get("response").getAsJsonObject().get("name").getAsString();
 	    	  email = element.getAsJsonObject().get("response").getAsJsonObject().get("email").getAsString();
 	      } else if("kakao".equals(gate)) {
+	    	  token_id = element.getAsJsonObject().get("id").getAsString();
 	    	  nickname = element.getAsJsonObject().get("properties").getAsJsonObject().get("nickname").getAsString();
 	    	  email = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString();
-	    	  token_id = element.getAsJsonObject().get("id").getAsString();
-	      }
+	      } else if ("google".equals(gate)) {
+	    	  token_id = element.getAsJsonObject().get("sub").getAsString();
+	    	  nickname = element.getAsJsonObject().get("name").getAsString();
+	    	  email = element.getAsJsonObject().get("email").getAsString();
+
+	        }
 	      
 	      Optional<User> opt_user = repository.findById(new OauthId(gate, token_id));
 	      System.out.println("--------opt_user : " + opt_user);

@@ -1,54 +1,40 @@
-/* style.css */
-
-/* 전체 페이지 스타일링 */
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
+* {
+   margin: 0;
+   padding: 0;
 }
 
-/* 링크 스타일링 */
-a {
-    text-decoration: none;
-    color: #333;
+#wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+#wrap .home {
+   margin-bottom : 2rem;
+   color : black;
+   text-decoration: none;
+   font-size: 40px;
+   font-weight: bold; 
 }
 
-/* 링크에 호버 시 스타일 변경 */
-a:hover {
-    color: #ff6600;
+
+#wrap .home:hover {
+   color : #929292;
+   transition: 0.4s;
 }
 
-/* 헤더 스타일링 */
-header {
-    background-color: #333;
-    color: #fff;
-    padding: 10px;
-    text-align: center;
+h2, a {
+   display: flex;
+   justify-content: center;
+   align-items: center;
 }
 
-/* 네비게이션 메뉴 스타일링 */
-nav {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-    background-color: #eee;
+h2 {
+   font-size : 40px;
+   margin-bottom : 2.5rem;
 }
 
-/* 네비게이션 메뉴 아이템 스타일링 */
-nav a {
-    margin: 0 10px;
-}
-
-/* 본문 내용 스타일링 */
-main {
-    padding: 20px;
-}
-
-/* 푸터 스타일링 */
-footer {
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    padding: 10px;
+a img {
+   width : 300px;
 }

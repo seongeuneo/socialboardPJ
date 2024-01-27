@@ -102,7 +102,7 @@ public class LoginController {
 			return "redirect:/social/loginPage";
 		}
 
-	} // nlogin
+	} // glogin
 
 	@GetMapping(value = "/logout")
 	public String logout(HttpSession session) {
