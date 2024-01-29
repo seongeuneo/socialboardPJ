@@ -95,6 +95,7 @@ public class LoginController {
 				return "redirect:/home";
 			} else {
 				return "redirect:/social/loginPage";
+				// 수정
 			}
 
 		} catch (Exception e) {
