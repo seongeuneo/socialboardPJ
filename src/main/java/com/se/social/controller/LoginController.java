@@ -42,14 +42,14 @@ public class LoginController {
 
 			if (userInfo != null) {
 				session.setAttribute("loginUser", userInfo);
-				return "redirect:/home";
+				return "redirect:home";
 			} else {
-				return "redirect:/social/loginPage";
+				return "redirect:social/loginPage";
 			}
 
 		} catch (Exception e) {
 
-			return "redirect:/social/loginPage";
+			return "redirect:social/loginPage";
 		}
 
 	} // klogin
@@ -67,14 +67,14 @@ public class LoginController {
 
 			if (userInfo != null) {
 				session.setAttribute("loginUser", userInfo);
-				return "redirect:/home";
+				return "redirect:home";
 			} else {
-				return "redirect:/social/loginPage";
+				return "redirect:social/loginPage";
 			}
 
 		} catch (Exception e) {
 
-			return "redirect:/social/loginPage";
+			return "redirect:social/loginPage";
 		}
 
 	} // nlogin
@@ -92,15 +92,15 @@ public class LoginController {
 
 			if (userInfo != null) {
 				session.setAttribute("loginUser", userInfo);
-				return "redirect:/home";
+				return "redirect:home";
 			} else {
-				return "redirect:/social/loginPage";
+				return "redirect:social/loginPage";
 				// 수정
 			}
 
 		} catch (Exception e) {
 
-			return "redirect:/social/loginPage";
+			return "redirect:social/loginPage";
 		}
 
 	} // glogin
@@ -109,7 +109,7 @@ public class LoginController {
 	public String logout(HttpSession session) {
 
 		session.invalidate();
-		return "redirect:/home";
+		return "redirect:home";
 	} // logout
 
 }
