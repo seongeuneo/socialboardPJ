@@ -20,8 +20,8 @@
 					<th>조회수</th>
 				</tr>
 
-				<c:if test="${not empty requestScope.boardList}">
-					<c:forEach var="b" items="${requestScope.boardList}">
+				<c:if test="${not empty requestScope.selectList}">
+					<c:forEach var="b" items="${requestScope.selectList}">
 						<tr>
 							<td>${b.board_id}</td>
 							<td>${b.useremail}</td>
@@ -38,9 +38,9 @@
 				<c:choose>
 					<c:when test="${resultDTO.start != resultDTO.page}">
 						<a class="firstB"
-							href="cartList?page=${resultDTO.start}&searchType=${searchType}&keyword=${keyword}">처음</a>
+							href="boardPage?page=${resultDTO.start}&searchType=${searchType}&keyword=${keyword}">처음</a>
 						<a class="ltB"
-							href="cartList?page=${resultDTO.page-1}&searchType=${searchType}&keyword=${keyword}">&LT;</a>
+							href="boardPage?page=${resultDTO.page-1}&searchType=${searchType}&keyword=${keyword}">&LT;</a>
 					</c:when>
 					<c:otherwise>
 						<span class="firstB">처음</span>
@@ -54,16 +54,16 @@
                   </c:if>
 					<c:if test="${i!=resultDTO.page}">
 						<a
-							href="cartList?page=${i}&searchType=${searchType}&keyword=${keyword}">${i}</a>&nbsp;
+							href="boardPage?page=${i}&searchType=${searchType}&keyword=${keyword}">${i}</a>&nbsp;
                   </c:if>
 				</c:forEach>
 
 				<c:choose>
 					<c:when test="${resultDTO.end != resultDTO.page}">
 						<a class="gtB"
-							href="cartList?page=${resultDTO.page+1}&searchType=${searchType}&keyword=${keyword}">&GT;</a>
+							href="boardPage?page=${resultDTO.page+1}&searchType=${searchType}&keyword=${keyword}">&GT;</a>
 						<a class="lastB"
-							href="cartList?page=${resultDTO.end}&searchType=${searchType}&keyword=${keyword}">마지막</a>
+							href="boardPage?page=${resultDTO.end}&searchType=${searchType}&keyword=${keyword}">마지막</a>
 					</c:when>
 					<c:otherwise>
 						<span class="gtB">&GT;</span>

@@ -5,7 +5,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+
+import com.querydsl.core.QueryResults;
 
 import lombok.Data;
 
@@ -48,5 +51,26 @@ public class PageResultDTO<EN> {
 
         pageList = IntStream.rangeClosed(start, end).boxed().collect(Collectors.toList());
     } //makePageList
+    
+    public PageResultDTO(QueryResults<EN> results) {
+        this.entityList = results.getResults();
+        this.totalPage = calculateTotalPages(results.getTotal(), size);
+        makePageList(createDummyPageable());
+    }
+
+    private int calculateTotalPages(long total, int size) {
+        return (int) Math.ceil((double) total / size);
+    }
+
+    private Pageable createDummyPageable() {
+        return PageRequest.of(page - 1, size);
+    }
+    
+    public PageResultDTO(QueryResults<EN> queryResults, Pageable pageable) {
+        entityList = queryResults.getResults();
+        totalPage = (int) Math.ceil((double) queryResults.getTotal() / pageable.getPageSize());
+        makePageList(pageable);
+    }
+
 	
 } //class

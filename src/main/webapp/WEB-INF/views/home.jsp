@@ -28,7 +28,7 @@
 
       <c:if test="${not empty sessionScope.loginUser}">
          <a href="social/logout">로그아웃</a>
-         <a href="">게시판가기</a>
+         <a href="board/boardPage">게시판가기</a>
       </c:if>
 
       <c:if test="${empty sessionScope.loginUser}">
