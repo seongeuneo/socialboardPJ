@@ -16,7 +16,9 @@ public interface BoardService {
 	public Board selectDetail(int board_id);
 
 	// insert, update
-	public String save(Board entity);
+	public int save(Board entity);
+	
+	public void updateBoardDelyn(int board_id);
 
 	// delete
 	public int delete(int board_id);

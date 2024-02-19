@@ -44,7 +44,7 @@ public class LoginController {
 				session.setAttribute("loginUser", userInfo);
 				return "redirect:home";
 			} else {
-				return "redirect:social/loginPage";
+				return "redirect:/social/loginPage";
 			}
 
 		} catch (Exception e) {
@@ -67,7 +67,7 @@ public class LoginController {
 
 			if (userInfo != null) {
 				session.setAttribute("loginUser", userInfo);
-				return "redirect:home";
+				return "redirect:/home";
 			} else {
 				return "redirect:social/loginPage";
 			}
@@ -92,7 +92,7 @@ public class LoginController {
 
 			if (userInfo != null) {
 				session.setAttribute("loginUser", userInfo);
-				return "redirect:home";
+				return "redirect:/home";
 			} else {
 				return "redirect:social/loginPage";
 				// 수정
@@ -109,7 +109,7 @@ public class LoginController {
 	public String logout(HttpSession session) {
 
 		session.invalidate();
-		return "redirect:home";
+		return "redirect:/home";
 	} // logout
 
 }

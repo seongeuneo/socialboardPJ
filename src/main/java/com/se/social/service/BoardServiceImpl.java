@@ -59,8 +59,8 @@ public class BoardServiceImpl implements BoardService {
 			return null;
 		}
 	}
-	
-	// 
+
+	//
 
 	// selectDetail
 	@Override
@@ -74,10 +74,19 @@ public class BoardServiceImpl implements BoardService {
 
 	// insert, update
 	@Override
-	public String save(Board entity) {
+	public int save(Board entity) {
 		repository.save(entity);
 		return entity.getBoard_id();
 	}
+	
+	// board_delyn 바꾸는 메서드
+	public void updateBoardDelyn(int board_id) {
+        Board board = repository.findById(board_id).orElse(null);
+        if (board != null) {
+            board.setBoard_delyn('Y');
+            repository.save(board);
+        }
+    }
 
 	// delete
 	@Override

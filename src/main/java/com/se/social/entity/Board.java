@@ -23,36 +23,36 @@ import lombok.NoArgsConstructor;
 //@IdClass(OauthId.class)
 public class Board {
 
-	   @Id
-	   private String board_id;
-	   
-	   @Column(name = "useremail", nullable = false)
-	   private String useremail;
-	   
-	   @Column(name = "board_regdate", nullable = false)
-	   private String board_regdate;
+	@Id
+	private int board_id;
 
-	   @Column(name = "board_title", nullable = false)
-	   private String board_title;
-	
-	   @Column(name = "board_content", nullable = false)
-	   private String board_content;
-	   
-	   @Column(name = "board_moddate", nullable = true)
-	   private String board_moddate;
-	   
-	   @Column(name = "board_deldate", nullable = true)
-	   private String board_deldate;
-	   
-	   @Column(name = "board_delyn", nullable = false)
-	   @ColumnDefault("'N'")
-	   private char board_delyn;
-	   
-	   @Column(name = "board_likes", nullable = false)
-	   @ColumnDefault("0")
-	   private int board_likes;
+	@Column(name = "useremail", nullable = false)
+	private String useremail;
 
-	   @Column(name = "board_views", nullable = false)
-	   @ColumnDefault("0")
-	   private int board_views;
+	@Column(name = "board_regdate", nullable = false)
+	private String board_regdate;
+
+	@Column(name = "board_title", nullable = false)
+	private String board_title;
+
+	@Column(name = "board_content", nullable = false)
+	private String board_content;
+
+	@Column(name = "board_moddate", nullable = true)
+	private String board_moddate;
+
+	@Column(name = "board_deldate", nullable = true)
+	private String board_deldate;
+
+	@Column(name = "board_delyn", nullable = false)
+	@ColumnDefault("'N'")
+	private char board_delyn;
+
+	@Column(name = "board_likes", nullable = false)
+	@ColumnDefault("0")
+	private int board_likes;
+
+	@Column(name = "board_views", nullable = false)
+	@ColumnDefault("0")
+	private int board_views;
 }

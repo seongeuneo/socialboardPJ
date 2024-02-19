@@ -25,7 +25,7 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final ComparablePath<Character> board_delyn = createComparable("board_delyn", Character.class);
 
-    public final StringPath board_id = createString("board_id");
+    public final NumberPath<Integer> board_id = createNumber("board_id", Integer.class);
 
     public final NumberPath<Integer> board_likes = createNumber("board_likes", Integer.class);
 

@@ -6,11 +6,38 @@
 <head>
 <meta charset="UTF-8">
 <title>소셜로그인 게시판</title>
+<link rel="stylesheet" href="/resources/css/boardPage.css">
 </head>
 <body>
 	<div id="wrap">
+		<div class="searchs">
+			<div class="searchBox">
+				<form action="boardPage" method="get">
+					<select name="searchType" id="searchType" onchange="keywordClear()">
+						<option value="all"
+							${requestScope.searchType == 'all' ? "selected" : "" }>전체</option>
+						<option value="useremail"
+							${requestScope.searchType == 'useremail' ? "selected" : "" }>회원
+							이메일</option>
+						<option value="board_title"
+							${requestScope.searchType == 'board_title' ? "selected" : "" }>게시물
+							제목</option>
+						<option value="board_content"
+							${requestScope.searchType == 'board_content' ? "selected" : "" }>게시글
+							내용</option>
+					</select> <input type="text" name="keyword" id="keyword"
+						placeholder="검색어를 입력하세요." value="${requestScope.keyword}" />
+					<button type="submit" id="searchBtn">Search</button>
+				</form>
+			</div>
+			<div>
+				<a href="boardInsert">새글 등록하기</a>
+			</div>
+		</div>
+
 		<div>
 			<table>
+
 				<tr>
 					<th>글번호</th>
 					<th>작성자</th>
@@ -23,7 +50,7 @@
 				<c:if test="${not empty requestScope.selectList}">
 					<c:forEach var="b" items="${requestScope.selectList}">
 						<tr>
-							<td>${b.board_id}</td>
+							<td><a href="boardDetail?board_id=${b.board_id}">${b.board_id}</a></td>
 							<td>${b.useremail}</td>
 							<td>${b.board_regdate}</td>
 							<td>${b.board_title}</td>
@@ -70,6 +97,10 @@
 						<span class="lastB">마지막</span>
 					</c:otherwise>
 				</c:choose>
+			</div>
+
+			<div class="home-link">
+				<a href="/home">Home</a>
 			</div>
 
 
