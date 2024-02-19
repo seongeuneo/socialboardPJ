@@ -6,6 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <title>소셜로그인 게시판</title>
+<link rel="stylesheet" href="/resources/css/boardPage.css">
 </head>
 <body>
 	<div id="wrap">
@@ -49,7 +50,7 @@
 		<div>
 			<a href="boardModify?board_id=${requestScope.boardDetail.board_id}">수정하기</a>
 		</div>
-		<div class="home-link">
+		<div class="boardPage-link">
 			<a href="boardPage">게시판 목록</a>
 		</div>
 		<div class="home-link">

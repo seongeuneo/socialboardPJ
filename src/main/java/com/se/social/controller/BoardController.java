@@ -49,10 +49,12 @@ public class BoardController {
 
 	}
 
+	// 새글 작성 페이지 이동
 	@GetMapping("/boardInsert")
 	public void getBoardInsert() {
 	};
 
+	// 새글 작성
 	@PostMapping("/boardInsert")
 	public String postBoardInsert(RedirectAttributes rttr, HttpServletRequest request, Board entity, Model model)
 			throws IOException {
@@ -104,6 +106,7 @@ public class BoardController {
 		model.addAttribute("boardDetail", updateBoard);
 		System.out.println("업데이트게시판" + updateBoard);
 		String uri = "board/boardDetail";
+		updateBoard.setBoard_delyn('N');
 
 		try {
 			if (boardService.save(updateBoard) > 0) {

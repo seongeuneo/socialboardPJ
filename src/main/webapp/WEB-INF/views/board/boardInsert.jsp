@@ -6,6 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <title>소셜로그인 게시판</title>
+<link rel="stylesheet" href="/resources/css/boardInsert.css">
 </head>
 <body>
 	<div id="wrap">
@@ -41,7 +42,7 @@
 		<%-- 	<c:if test="${not empty requestScope.message}">
 => ${requestScope.message}
 </c:if> --%>
-		<div class="home-link">
+		<div class="boardPage-link">
 			<a href="boardPage">게시판 목록</a>
 		</div>
 		<div class="home-link">

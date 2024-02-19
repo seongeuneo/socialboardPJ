@@ -6,6 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <title>소셜로그인 게시판</title>
+<link rel="stylesheet" href="/resources/css/boardModify.css">
 </head>
 <body>
 	<div id="wrap">
@@ -55,7 +56,7 @@
 					<td><input type="submit" value="수정"></td>
 				</tr>
 			</table>
-			<div class="home-link">
+			<div class="boardPage-link">
 				<a href="boardPage">게시판 목록</a>
 			</div>
 			<div class="home-link">
