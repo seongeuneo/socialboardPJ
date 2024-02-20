@@ -1,3 +1,5 @@
+
+// 게시글 삭제
 function axboardDelete(board_id) {
    let url = "/board/deleteBoard/" + board_id;
 
@@ -18,3 +20,6 @@ function axboardDelete(board_id) {
       alert("취소되었습니다.");
    }
 }
+
+
+

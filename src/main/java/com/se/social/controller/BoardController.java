@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.se.social.domain.PageRequestDTO;
@@ -26,8 +28,9 @@ import com.se.social.service.BoardService;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 
-//@Log4j
+@Log4j2
 @AllArgsConstructor
 @Controller
 @RequestMapping(value = "/board")
@@ -147,4 +150,15 @@ public class BoardController {
 
 		return ResponseEntity.ok().build();
 	}
+	
+	// 좋아요 기능
+	@PostMapping("/likeBoard")
+	@ResponseBody
+	public ResponseEntity<?> likeBoard(@RequestParam("board_id") int boardId) {
+	    boardService.incrementLikes(boardId);
+	    int updatedLikes = boardService.getLikes(boardId);
+	    return ResponseEntity.ok(Map.of("likes", updatedLikes));
+	}
+
+
 }

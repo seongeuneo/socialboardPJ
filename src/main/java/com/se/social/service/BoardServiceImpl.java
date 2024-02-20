@@ -94,5 +94,22 @@ public class BoardServiceImpl implements BoardService {
 		repository.deleteById(board_id);
 		return board_id;
 	}
+	
+	// 좋아요 기능 
+	@Override
+	public void incrementLikes(int board_id) {
+	    Board board = repository.findById(board_id).orElse(null);
+	    if (board != null) {
+	        int currentLikes = board.getBoard_likes();
+	        board.setBoard_likes(currentLikes + 1);
+	        repository.save(board);
+	    }
+	}
+
+	@Override
+	public int getLikes(int board_id) {
+	    Board board = repository.findById(board_id).orElse(null);
+	    return (board != null) ? board.getBoard_likes() : 0;
+	}
 
 }

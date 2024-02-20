@@ -36,10 +36,6 @@
 					<td>${requestScope.boardDetail.board_regdate}</td>
 				</tr>
 				<tr height="40">
-					<th>좋아요수</th>
-					<td>${requestScope.boardDetail.board_likes}</td>
-				</tr>
-				<tr height="40">
 					<th>조회수</th>
 					<td>${requestScope.boardDetail.board_views}</td>
 				</tr>
@@ -55,6 +51,10 @@
 				<a href="boardModify?board_id=${requestScope.boardDetail.board_id}">수정하기</a>
 			</div>
 		</c:if>
+		<div class="likes">
+			<span style="cursor:pointer;">❤︎</span>
+			<span>${requestScope.boardDetail.board_likes}</span>
+		</div>
 		<div class="boardPage-link">
 			<a href="boardPage">게시판 목록</a>
 		</div>

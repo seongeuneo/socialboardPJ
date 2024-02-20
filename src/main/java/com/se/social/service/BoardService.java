@@ -18,7 +18,12 @@ public interface BoardService {
 	// insert, update
 	public int save(Board entity);
 	
+	// 삭제 기능 (board_delyn 상태 변화시키기)
 	public void updateBoardDelyn(int board_id);
+	
+	// 좋아요 추가하기
+	void incrementLikes(int boardId);
+	int getLikes(int boardId);
 
 	// delete
 	public int delete(int board_id);
