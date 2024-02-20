@@ -8,10 +8,12 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -89,6 +91,11 @@ public class BoardController {
 	public String getBoardDetail(@RequestParam("board_id") int board_id, Model model) {
 		Board boardDetail = boardService.selectDetail(board_id);
 		model.addAttribute("boardDetail", boardDetail);
+		
+		// 조회수
+		int currentViews = boardDetail.getBoard_views();
+		boardDetail.setBoard_views(currentViews + 1);
+		boardService.save(boardDetail);
 		return "board/boardDetail";
 	};
 
@@ -128,16 +135,16 @@ public class BoardController {
 	}
 
 	// 게시글 삭제
-	@PostMapping(value = "/deleteBoard")
-	public String deleteBoard(@RequestParam int board_id, @RequestParam char board_delyn, Model model)
-			throws IOException {
-		try {
-            boardService.updateBoardDelyn(board_id);
-			return "redirect:/board/boardPage"; // 삭제 후 게시글 목록으로 이동
-		} catch (Exception e) {
-			model.addAttribute("error", "게시글 삭제에 실패했습니다.");
-			return "errorPage"; // 실패 시 에러 페이지로 이동
+	@PostMapping(value = "/deleteBoard/{board_id}")
+	public ResponseEntity<?> deleteBoard(@PathVariable("board_id") int board_id) {
+		Board entity = 	boardService.selectDetail(board_id);
+		
+		if(entity != null) {
+			entity.setBoard_deldate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+			entity.setBoard_delyn('Y');
+			boardService.save(entity);
 		}
 
+		return ResponseEntity.ok().build();
 	}
 }

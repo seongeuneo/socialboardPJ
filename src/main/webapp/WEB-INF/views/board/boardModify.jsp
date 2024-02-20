@@ -7,6 +7,8 @@
 <meta charset="UTF-8">
 <title>소셜로그인 게시판</title>
 <link rel="stylesheet" href="/resources/css/boardModify.css">
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="/resources/js/board.js"></script>
 </head>
 <body>
 	<div id="wrap">
@@ -66,7 +68,7 @@
 		  <form action="deleteBoard" method="post">
             <input type="hidden" name="board_id" value="${requestScope.boardModify.board_id}">
             <input type="hidden" name="board_delyn" value="${requestScope.boardModify.board_delyn}">
-            <button type="submit">게시글 삭제하기</button>
+            <button onclick="axboardDelete(${requestScope.boardModify.board_id})" id="${requestScope.boardModify.board_id}">게시글 삭제하기</button>
         </form>
 	</div>
 

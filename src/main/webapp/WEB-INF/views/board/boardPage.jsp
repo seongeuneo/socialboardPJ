@@ -40,9 +40,9 @@
 
 				<tr>
 					<th>글번호</th>
+					<th>제목</th>
 					<th>작성자</th>
 					<th>작성일</th>
-					<th>제목</th>
 					<th>좋아요</th>
 					<th>조회수</th>
 				</tr>
@@ -51,11 +51,11 @@
 					<c:forEach var="b" items="${requestScope.selectList}">
 						<tr>
 							<td><a href="boardDetail?board_id=${b.board_id}">${b.board_id}</a></td>
-							<td>${b.useremail}</td>
-							<td>${b.board_regdate}</td>
-							<td>${b.board_title}</td>
-							<td>${b.board_likes}</td>
-							<td>${b.board_views}</td>
+							<td><a href="boardDetail?board_id=${b.board_id}">${b.board_title}</a></td>
+							<td><a href="boardDetail?board_id=${b.board_id}">${b.useremail}</a></td>
+							<td><a href="boardDetail?board_id=${b.board_id}">${b.board_regdate}</a></td>
+							<td><a href="boardDetail?board_id=${b.board_id}">${b.board_likes}</a></td>
+							<td><a href="boardDetail?board_id=${b.board_id}">${b.board_views}</a></td>
 						</tr>
 					</c:forEach>
 				</c:if>

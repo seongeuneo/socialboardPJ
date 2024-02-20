@@ -7,6 +7,8 @@
 <meta charset="UTF-8">
 <title>소셜로그인 게시판</title>
 <link rel="stylesheet" href="/resources/css/boardPage.css">
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="/resources/js/board.js"></script>
 </head>
 <body>
 	<div id="wrap">
@@ -47,9 +49,12 @@
 				</tr>
 			</c:if>
 		</table>
-		<div>
-			<a href="boardModify?board_id=${requestScope.boardDetail.board_id}">수정하기</a>
-		</div>
+		<c:if
+			test="${sessionScope.loginUser.useremail == requestScope.boardDetail.useremail}">
+			<div>
+				<a href="boardModify?board_id=${requestScope.boardDetail.board_id}">수정하기</a>
+			</div>
+		</c:if>
 		<div class="boardPage-link">
 			<a href="boardPage">게시판 목록</a>
 		</div>
