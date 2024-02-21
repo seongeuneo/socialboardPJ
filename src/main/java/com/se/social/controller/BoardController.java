@@ -5,26 +5,34 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.se.social.domain.LikesId;
 import com.se.social.domain.PageRequestDTO;
 import com.se.social.domain.PageResultDTO;
 import com.se.social.entity.Board;
+import com.se.social.entity.Likes;
+import com.se.social.repository.LikesRepository;
 import com.se.social.service.BoardService;
+import com.se.social.service.LikesService;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
@@ -37,6 +45,7 @@ import lombok.extern.log4j.Log4j2;
 public class BoardController {
 
 	private BoardService boardService;
+	private final LikesService likesService;
 
 	// List =====================================================
 	@GetMapping("/boardPage")
@@ -94,7 +103,7 @@ public class BoardController {
 	public String getBoardDetail(@RequestParam("board_id") int board_id, Model model) {
 		Board boardDetail = boardService.selectDetail(board_id);
 		model.addAttribute("boardDetail", boardDetail);
-		
+
 		// 조회수
 		int currentViews = boardDetail.getBoard_views();
 		boardDetail.setBoard_views(currentViews + 1);
@@ -140,9 +149,9 @@ public class BoardController {
 	// 게시글 삭제
 	@PostMapping(value = "/deleteBoard/{board_id}")
 	public ResponseEntity<?> deleteBoard(@PathVariable("board_id") int board_id) {
-		Board entity = 	boardService.selectDetail(board_id);
-		
-		if(entity != null) {
+		Board entity = boardService.selectDetail(board_id);
+
+		if (entity != null) {
 			entity.setBoard_deldate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 			entity.setBoard_delyn('Y');
 			boardService.save(entity);
@@ -151,14 +160,37 @@ public class BoardController {
 		return ResponseEntity.ok().build();
 	}
 	
-	// 좋아요 기능
-	@PostMapping("/likeBoard")
+
+	@PostMapping("/toggle")
 	@ResponseBody
-	public ResponseEntity<?> likeBoard(@RequestParam("board_id") int boardId) {
-	    boardService.incrementLikes(boardId);
-	    int updatedLikes = boardService.getLikes(boardId);
-	    return ResponseEntity.ok(Map.of("likes", updatedLikes));
+	public ResponseEntity<String> toggleLike(@RequestBody Likes entity) {
+	    try {
+	        LikesId id = new LikesId(entity.getUseremail(), entity.getBoard_id());
+
+	        Board boardEntity = boardService.selectDetail(entity.getBoard_id());
+
+	        if (boardEntity != null) {
+	            if (likesService.selectDetail(entity.getBoard_id()) == null) {
+	                boardEntity.setBoard_likes(boardEntity.getBoard_likes() + 1);
+	                boardService.save(boardEntity);
+	                likesService.save(entity);
+	                return ResponseEntity.ok("좋아요가 추가되었습니다.");
+	            } else {
+	                boardEntity.setBoard_likes(boardEntity.getBoard_likes() - 1);
+	                boardService.save(boardEntity);
+	                likesService.delete(id);
+	                return ResponseEntity.ok("좋아요가 취소되었습니다.");
+	            }
+	        } else {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("해당 게시글을 찾을 수 없습니다.");
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("좋아요 처리 중 오류가 발생했습니다.");
+	    }
 	}
+
+
 
 
 }
