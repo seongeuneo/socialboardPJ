@@ -1,9 +1,6 @@
 package com.se.social.service;
 
-import java.util.Optional;
-
 import com.se.social.domain.LikesId;
-import com.se.social.entity.Board;
 import com.se.social.entity.Likes;
 
 public interface LikesService {

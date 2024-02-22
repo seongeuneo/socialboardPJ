@@ -1,13 +1,9 @@
 package com.se.social.service;
 
-import java.util.Optional;
-
 import org.springframework.stereotype.Service;
 
 import com.se.social.domain.LikesId;
-import com.se.social.entity.Board;
 import com.se.social.entity.Likes;
-import com.se.social.repository.BoardRepository;
 import com.se.social.repository.LikesRepository;
 
 import lombok.RequiredArgsConstructor;
