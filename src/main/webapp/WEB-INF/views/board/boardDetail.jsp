@@ -53,8 +53,8 @@
 			</div>
 		</c:if>
 		<div class="likes">
-			<span id="likeButton" style="cursor:pointer;">❤︎</span>
-			<span>${requestScope.boardDetail.board_likes}</span>
+			<span id="likeButton" style="cursor:pointer;" onclick="toggleLikes(${requestScope.boardDetail.board_id},'${sessionScope.loginUser.useremail}')">❤︎</span>
+			<span id="likeCount">${requestScope.boardDetail.board_likes}</span>
 		</div>
 		<div class="boardPage-link">
 			<a href="boardPage">게시판 목록</a>

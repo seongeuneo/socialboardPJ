@@ -26,10 +26,6 @@ import lombok.NoArgsConstructor;
 @IdClass(LikesId.class)
 public class Likes implements Serializable {
 
-    @Id
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "board_id", referencedColumnName = "board_id", insertable = false, updatable = false)
-    private Board board;
 
     @Id
     private String useremail;

@@ -8,6 +8,6 @@ import com.se.social.entity.Likes;
 import com.se.social.entity.QLikes;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-public interface LikesRepository extends JpaRepository<Likes, LikesId>, QuerydslPredicateExecutor<Likes> {
+public interface LikesRepository extends JpaRepository<Likes, LikesId> {
 
 }

@@ -161,34 +161,47 @@ public class BoardController {
 	}
 	
 
+	// 좋아요
 	@PostMapping("/toggle")
 	@ResponseBody
-	public ResponseEntity<String> toggleLike(@RequestBody Likes entity) {
+	public ResponseEntity<?> toggleLike(@RequestBody Likes entity) {
 	    try {
 	        LikesId id = new LikesId(entity.getUseremail(), entity.getBoard_id());
-
 	        Board boardEntity = boardService.selectDetail(entity.getBoard_id());
 
 	        if (boardEntity != null) {
-	            if (likesService.selectDetail(entity.getBoard_id()) == null) {
+	            Likes existingLike = likesService.selectDetail(id);
+
+	            if (existingLike == null) {
+	                // 좋아요 추가
 	                boardEntity.setBoard_likes(boardEntity.getBoard_likes() + 1);
-	                boardService.save(boardEntity);
 	                likesService.save(entity);
-	                return ResponseEntity.ok("좋아요가 추가되었습니다.");
+	                boardService.save(boardEntity); // 트랜잭션 처리
+
+	                System.out.println("좋아요 추가 완료. 현재 좋아요 개수: " + boardEntity.getBoard_likes());
+
+	                return ResponseEntity.ok().build();
 	            } else {
+	                // 좋아요 취소
 	                boardEntity.setBoard_likes(boardEntity.getBoard_likes() - 1);
-	                boardService.save(boardEntity);
 	                likesService.delete(id);
-	                return ResponseEntity.ok("좋아요가 취소되었습니다.");
+	                boardService.save(boardEntity); // 트랜잭션 처리
+
+	                System.out.println("좋아요 취소 완료. 현재 좋아요 개수: " + boardEntity.getBoard_likes());
+
+	                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	            }
 	        } else {
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("해당 게시글을 찾을 수 없습니다.");
 	        }
 	    } catch (Exception e) {
 	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("좋아요 처리 중 오류가 발생했습니다.");
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
 	    }
 	}
+
+
+
 
 
 

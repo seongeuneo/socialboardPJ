@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.se.social.domain.LikesId;
 import com.se.social.entity.Board;
 import com.se.social.entity.Likes;
+import com.se.social.repository.BoardRepository;
 import com.se.social.repository.LikesRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -19,9 +20,9 @@ public class LikesServiceImpl implements LikesService {
 
 	// selectDetail
 	@Override
-	public Optional<Board> selectDetail(int board_id) {
-	    return repository.findById(new LikesId(null, board_id)).map(Likes::getBoard);
-	}
+	public Likes selectDetail(LikesId likesId) {
+        return repository.findById(likesId).orElse(null);
+    }
 	
 	// insert, update
 	@Override
