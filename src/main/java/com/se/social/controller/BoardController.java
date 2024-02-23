@@ -10,6 +10,7 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -29,9 +30,11 @@ import com.se.social.domain.LikesId;
 import com.se.social.domain.PageRequestDTO;
 import com.se.social.domain.PageResultDTO;
 import com.se.social.entity.Board;
+import com.se.social.entity.Comments;
 import com.se.social.entity.Likes;
 import com.se.social.repository.LikesRepository;
 import com.se.social.service.BoardService;
+import com.se.social.service.CommentsService;
 import com.se.social.service.LikesService;
 
 import lombok.AllArgsConstructor;
@@ -46,6 +49,7 @@ public class BoardController {
 
 	private BoardService boardService;
 	private final LikesService likesService;
+	private final CommentsService commentsService;
 
 	// List =====================================================
 	@GetMapping("/boardPage")
@@ -159,51 +163,56 @@ public class BoardController {
 
 		return ResponseEntity.ok().build();
 	}
-	
 
 	// 좋아요
 	@PostMapping("/toggle")
 	@ResponseBody
 	public ResponseEntity<?> toggleLike(@RequestBody Likes entity) {
-	    try {
-	        LikesId id = new LikesId(entity.getUseremail(), entity.getBoard_id());
-	        Board boardEntity = boardService.selectDetail(entity.getBoard_id());
+		try {
+			LikesId id = new LikesId(entity.getUseremail(), entity.getBoard_id());
+			Board boardEntity = boardService.selectDetail(entity.getBoard_id());
 
-	        if (boardEntity != null) {
-	            Likes existingLike = likesService.selectDetail(id);
+			if (boardEntity != null) {
+				Likes existingLike = likesService.selectDetail(id);
 
-	            if (existingLike == null) {
-	                // 좋아요 추가
-	                boardEntity.setBoard_likes(boardEntity.getBoard_likes() + 1);
-	                likesService.save(entity);
-	                boardService.save(boardEntity); // 트랜잭션 처리
+				if (existingLike == null) {
+					// 좋아요 추가
+					boardEntity.setBoard_likes(boardEntity.getBoard_likes() + 1);
+					likesService.save(entity);
+					boardService.save(boardEntity); // 트랜잭션 처리
 
-	                System.out.println("좋아요 추가 완료. 현재 좋아요 개수: " + boardEntity.getBoard_likes());
+					System.out.println("좋아요 추가 완료. 현재 좋아요 개수: " + boardEntity.getBoard_likes());
 
-	                return ResponseEntity.ok().build();
-	            } else {
-	                // 좋아요 취소
-	                boardEntity.setBoard_likes(boardEntity.getBoard_likes() - 1);
-	                likesService.delete(id);
-	                boardService.save(boardEntity); // 트랜잭션 처리
+					return ResponseEntity.ok().build();
+				} else {
+					// 좋아요 취소
+					boardEntity.setBoard_likes(boardEntity.getBoard_likes() - 1);
+					likesService.delete(id);
+					boardService.save(boardEntity); // 트랜잭션 처리
 
-	                System.out.println("좋아요 취소 완료. 현재 좋아요 개수: " + boardEntity.getBoard_likes());
+					System.out.println("좋아요 취소 완료. 현재 좋아요 개수: " + boardEntity.getBoard_likes());
 
-	                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-	            }
-	        } else {
-	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("해당 게시글을 찾을 수 없습니다.");
-	        }
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
-	    }
+					return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+				}
+			} else {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("해당 게시글을 찾을 수 없습니다.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+		}
 	}
 
+	@PostMapping("/postComments")
+	public String insertComments(@ModelAttribute Comments data, HttpServletRequest request) {
 
-
-
-
-
+		// 데이터 저장이 성공한 경우 Referer 헤더의 값으로 리다이렉트
+		data.setComment_delyn("'N'");
+		data.setComment_regdate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+		
+		commentsService.save(data);
+		
+		return "redirect:boardDetail?board_id=" + data.getBoard_id();
+	}
 
 }

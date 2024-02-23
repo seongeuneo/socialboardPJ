@@ -21,13 +21,14 @@ function axboardDelete(board_id) {
 	}
 }
 
+// 좋아요
 function toggleLikes(board_id, useremail) {
 	let url = "/board/toggle";
 
 	axios.post(url, {
 		useremail: useremail,
 		board_id: parseInt(board_id)
-	}, { headers: { 'Content-Type': 'application/json' }  }
+	}, { headers: { 'Content-Type': 'application/json' } }
 
 	).then(response => {
 		let likeCountElement = document.getElementById('likeCount');
