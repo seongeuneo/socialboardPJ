@@ -1,0 +1,80 @@
+/* boardPage.css */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 0;
+}
+
+#wrap {
+    width: 80%;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #333;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+.likes {
+    margin-top: 20px;
+}
+
+#likeButton {
+    color: #ff1493; /* Hot Pink color for like button */
+}
+
+.boardPage-link {
+    margin-top: 20px;
+}
+
+form {
+    margin-top: 20px;
+}
+
+input[type="text"] {
+    width: 80%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+button {
+    padding: 8px 12px;
+    background-color: #4caf50; /* Green color for buttons */
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.home-link {
+    margin-top: 20px;
+}
+
+a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+
+a:hover {
+    color: #4caf50;
+}

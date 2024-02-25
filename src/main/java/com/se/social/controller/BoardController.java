@@ -203,6 +203,7 @@ public class BoardController {
 		}
 	}
 
+	// 댓글 쓰기
 	@PostMapping("/postComments")
 	public String insertComments(@ModelAttribute Comments data, HttpServletRequest request) {
 
@@ -214,5 +215,13 @@ public class BoardController {
 		
 		return "redirect:boardDetail?board_id=" + data.getBoard_id();
 	}
+	
+	// 댓글 가져오기
+	@GetMapping("/commentsDetail")
+	public void getComments(@RequestParam("comment_id") int comment_id, Model model) {
+	    Comments commentsDetail = commentsService.selectDetail(comment_id);
+	    model.addAttribute("commentsDetail", commentsDetail);
+	}
+
 
 }

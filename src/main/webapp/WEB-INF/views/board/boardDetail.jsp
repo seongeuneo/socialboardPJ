@@ -6,7 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <title>소셜로그인 게시판</title>
-<link rel="stylesheet" href="/resources/css/boardPage.css">
+<link rel="stylesheet" href="/resources/css/boardDetail.css">
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="/resources/js/board.js"></script>
@@ -68,20 +68,11 @@
 						<td>${sessionScope.loginUser.useremail}<input type="hidden"
 							id="useremail" value="${sessionScope.loginUser.useremail}"
 							name="useremail"></td>
-					</tr>
-
-					<tr height="40" id="insertComments" style="display: inline-block;">
 						<td><input type="text" id="comment_content"
 							name="comment_content" required></td>
-					</tr>
-
-					<tr height="40" id="insertComments" style="display: inline-block;">
 						<td><input type="hidden" id="board_id"
 							value="${requestScope.boardDetail.board_id}"
 							name="board_id"></td>
-					</tr>
-
-					<tr height="40">
 						<td colspan="2">
 							<button type="submit" style="margin-left: 10px;">등록</button>
 						</td>
@@ -89,6 +80,26 @@
 
 				</table>
 			</form>
+			<table>
+			<c:if test="${not empty requestScope.commentsDetail}">
+				<tr height="40">
+					<th>댓글 번호</th>
+					<td>${requestScope.commentsDetail.comment_id}</td>
+				</tr>
+				<tr height="40">
+					<th>작성자</th>
+					<td>${requestScope.commentsDetail.useremail}</td>
+				</tr>
+				<tr height="40">
+					<th>댓글 내용</th>
+					<td>${requestScope.commentsDetail.comment_content}</td>
+				</tr>
+				<tr height="40">
+					<th>등록일</th>
+					<td>${requestScope.commentsDetail.comment_regdate}</td>
+				</tr>
+			</c:if>
+		</table>
 		</div>
 		<div class="home-link">
 			<a href="/home">Home</a>
