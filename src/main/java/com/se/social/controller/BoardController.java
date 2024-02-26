@@ -102,9 +102,9 @@ public class BoardController {
 		return uri;
 	}
 
-	// 게시글 상세 이동
+	// 게시글 상세 이동 (+댓글리스트 까지)
 	@GetMapping("/boardDetail")
-	public String getBoardDetail(@RequestParam("board_id") int board_id, Model model) {
+	public String getBoardDetail(@RequestParam("board_id") int board_id, Model model, @RequestParam(value = "page", defaultValue = "1") int page) {
 		Board boardDetail = boardService.selectDetail(board_id);
 		model.addAttribute("boardDetail", boardDetail);
 
@@ -112,6 +112,14 @@ public class BoardController {
 		int currentViews = boardDetail.getBoard_views();
 		boardDetail.setBoard_views(currentViews + 1);
 		boardService.save(boardDetail);
+		
+		// 댓글
+		PageRequestDTO requestDTO = PageRequestDTO.builder().page(page).size(5).build();
+		PageResultDTO<Comments> resultDTO = commentsService.selectList(requestDTO, board_id);
+		
+		 model.addAttribute("commentsList", resultDTO.getEntityList());
+		 model.addAttribute("resultDTO", resultDTO);
+		
 		return "board/boardDetail";
 	};
 
@@ -214,13 +222,6 @@ public class BoardController {
 		commentsService.save(data);
 		
 		return "redirect:boardDetail?board_id=" + data.getBoard_id();
-	}
-	
-	// 댓글 가져오기
-	@GetMapping("/commentsDetail")
-	public void getComments(@RequestParam("comment_id") int comment_id, Model model) {
-	    Comments commentsDetail = commentsService.selectDetail(comment_id);
-	    model.addAttribute("commentsDetail", commentsDetail);
 	}
 
 

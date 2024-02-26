@@ -65,14 +65,13 @@
 				<table>
 
 					<tr height="40">
-						<td>${sessionScope.loginUser.useremail}<input type="hidden"
+						<td>작성자 : ${sessionScope.loginUser.useremail}<input type="hidden"
 							id="useremail" value="${sessionScope.loginUser.useremail}"
 							name="useremail"></td>
 						<td><input type="text" id="comment_content"
 							name="comment_content" required></td>
 						<td><input type="hidden" id="board_id"
-							value="${requestScope.boardDetail.board_id}"
-							name="board_id"></td>
+							value="${requestScope.boardDetail.board_id}" name="board_id"></td>
 						<td colspan="2">
 							<button type="submit" style="margin-left: 10px;">등록</button>
 						</td>
@@ -80,31 +79,77 @@
 
 				</table>
 			</form>
-			<table>
-			<c:if test="${not empty requestScope.commentsDetail}">
-				<tr height="40">
-					<th>댓글 번호</th>
-					<td>${requestScope.commentsDetail.comment_id}</td>
-				</tr>
-				<tr height="40">
-					<th>작성자</th>
-					<td>${requestScope.commentsDetail.useremail}</td>
-				</tr>
-				<tr height="40">
-					<th>댓글 내용</th>
-					<td>${requestScope.commentsDetail.comment_content}</td>
-				</tr>
-				<tr height="40">
-					<th>등록일</th>
-					<td>${requestScope.commentsDetail.comment_regdate}</td>
-				</tr>
-			</c:if>
-		</table>
-		</div>
-		<div class="home-link">
-			<a href="/home">Home</a>
+			<div class="comments">
+				<table>
+					<tr>
+						<th>댓글 번호</th>
+						<th>작성자</th>
+						<th>댓글 내용</th>
+						<th>등록일</th>
+					</tr>
+
+					<c:if test="${not empty requestScope.commentsList}">
+						<c:forEach var="c" items="${requestScope.commentsList}">
+							<tr>
+								<td><a>${c.comment_id}</a></td>
+								<td><a>${c.useremail}</a></td>
+								<td><a>${c.comment_content}</a></td>
+								<td><a>${c.comment_regdate}</a></td>
+							</tr>
+						</c:forEach>
+					</c:if>
+					<c:if test="${empty requestScope.commentsList}">
+						<tr>
+							<th colspan="4">내용물 없음</th>
+						</tr>
+					</c:if>
+				</table>
+			</div>
 		</div>
 
+		<div class="pageNation">
+			<c:choose>
+				<c:when test="${resultDTO.start != resultDTO.page}">
+					<a class="firstB"
+						href="boardDetail?board_id=${requestScope.boardDetail.board_id}&page=${resultDTO.start}">처음</a>
+					<a class="ltB"
+						href="boardDetail?board_id=${requestScope.boardDetail.board_id}&page=${resultDTO.page-1}">&LT;</a>
+				</c:when>
+				<c:otherwise>
+					<span class="firstB">처음</span>
+					<span class="ltB">&LT;</span>
+				</c:otherwise>
+
+			</c:choose>
+
+			<c:forEach var="i" items="${resultDTO.pageList}">
+				<c:if test="${i==resultDTO.page}">
+					<span><strong>${i}</strong></span>&nbsp;
+                      </c:if>
+				<c:if test="${i!=resultDTO.page}">
+					<a
+						href="boardDetail?board_id=${requestScope.boardDetail.board_id}&page=${i}">${i}</a>&nbsp;
+                      </c:if>
+			</c:forEach>
+			<c:choose>
+				<c:when test="${resultDTO.end != resultDTO.page}">
+					<a class="gtB"
+						href="boardDetail?board_id=${requestScope.boardDetail.board_id}&page=${resultDTO.page+1}">&GT;</a>
+					<a class="lastB"
+						href="boardDetail?board_id=${requestScope.boardDetail.board_id}&page=${resultDTO.end}">마지막</a>
+				</c:when>
+				<c:otherwise>
+					<span class="gtB">&GT;</span>
+					<span class="lastB">마지막</span>
+				</c:otherwise>
+			</c:choose>
+		</div>
 	</div>
+
+	<div class="home-link">
+		<a href="/home">Home</a>
+	</div>
+
+
 </body>
 </html>

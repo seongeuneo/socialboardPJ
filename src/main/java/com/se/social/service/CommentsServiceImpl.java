@@ -1,12 +1,15 @@
 package com.se.social.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.querydsl.core.QueryResults;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.se.social.domain.PageRequestDTO;
+import com.se.social.domain.PageResultDTO;
 import com.se.social.entity.Comments;
-import com.se.social.repository.BoardRepository;
+import com.se.social.entity.QComments;
 import com.se.social.repository.CommentsRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -15,15 +18,26 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Service
 @RequiredArgsConstructor
-public class CommentsServiceImpl implements CommentsService{
-	
+public class CommentsServiceImpl implements CommentsService {
+
 	private final CommentsRepository repository;
-	
+	private final JPAQueryFactory queryFactory;
+	private final QComments comments = QComments.comments;
+
 	// selectList
-	public List<Comments> selectList() {
-		return repository.findAll();
+	@Override
+	public PageResultDTO<Comments> selectList(PageRequestDTO requestDTO, int board_id) {
+		QueryResults<Comments> result = queryFactory
+				.selectFrom(comments)
+				.where(comments.comment_delyn.eq("'N'")
+				.and(comments.board_id.eq(board_id)))
+				.offset(requestDTO.getPageable().getOffset())
+				.limit(requestDTO.getPageable().getPageSize())
+				.fetchResults();
+
+		return new PageResultDTO<>(result, requestDTO.getPageable());
 	}
-	
+
 	// selectDetail
 	public Comments selectDetail(int comment_id) {
 		Optional<Comments> result = repository.findById(comment_id);
@@ -33,19 +47,18 @@ public class CommentsServiceImpl implements CommentsService{
 			return null;
 		}
 	}
-	
+
 	// insert, update
 	public int save(Comments entity) {
 		repository.save(entity);
 		return entity.getComment_id();
 	}
-	
+
 	// delete
 	public int delete(int comment_id) {
 		repository.deleteById(comment_id);
 		return comment_id;
-		
+
 	}
-	
-  
+
 }

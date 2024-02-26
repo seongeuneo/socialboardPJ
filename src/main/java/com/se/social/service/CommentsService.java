@@ -1,13 +1,12 @@
 package com.se.social.service;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.se.social.domain.PageRequestDTO;
+import com.se.social.domain.PageResultDTO;
 import com.se.social.entity.Comments;
 
 public interface CommentsService {
 	// selectList
-	public List<Comments> selectList();
+	public PageResultDTO<Comments> selectList(PageRequestDTO requestDTO, int id);
 
 	// selectDetail
 	public Comments selectDetail(int comment_id);
