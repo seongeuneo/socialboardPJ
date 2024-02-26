@@ -104,7 +104,8 @@ public class BoardController {
 
 	// 게시글 상세 이동 (+댓글리스트 까지)
 	@GetMapping("/boardDetail")
-	public String getBoardDetail(@RequestParam("board_id") int board_id, Model model, @RequestParam(value = "page", defaultValue = "1") int page) {
+	public String getBoardDetail(@RequestParam("board_id") int board_id, Model model,
+			@RequestParam(value = "page", defaultValue = "1") int page) {
 		Board boardDetail = boardService.selectDetail(board_id);
 		model.addAttribute("boardDetail", boardDetail);
 
@@ -112,14 +113,14 @@ public class BoardController {
 		int currentViews = boardDetail.getBoard_views();
 		boardDetail.setBoard_views(currentViews + 1);
 		boardService.save(boardDetail);
-		
+
 		// 댓글
 		PageRequestDTO requestDTO = PageRequestDTO.builder().page(page).size(5).build();
 		PageResultDTO<Comments> resultDTO = commentsService.selectList(requestDTO, board_id);
-		
-		 model.addAttribute("commentsList", resultDTO.getEntityList());
-		 model.addAttribute("resultDTO", resultDTO);
-		
+
+		model.addAttribute("commentsList", resultDTO.getEntityList());
+		model.addAttribute("resultDTO", resultDTO);
+
 		return "board/boardDetail";
 	};
 
@@ -218,11 +219,18 @@ public class BoardController {
 		// 데이터 저장이 성공한 경우 Referer 헤더의 값으로 리다이렉트
 		data.setComment_delyn("'N'");
 		data.setComment_regdate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-		
+
 		commentsService.save(data);
-		
+
 		return "redirect:boardDetail?board_id=" + data.getBoard_id();
 	}
 
+	// 댓글 수정
+	@PostMapping("/updateComments")
+	public int updateComments(@RequestBody Comments data) {
+		data.setComment_content(data.getComment_content());
+		int result = commentsService.update(data); // commentsService에서 수정 로직을 호출하도록 변경
+		return result;
+	}
 
 }

@@ -13,6 +13,8 @@ public interface CommentsService {
 
 	// insert, update
 	public int save(Comments entity);
+	
+	public int update(Comments entity);
 
 	// delete
 	public int delete(int comment_id);

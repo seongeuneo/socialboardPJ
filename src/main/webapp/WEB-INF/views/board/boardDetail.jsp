@@ -65,9 +65,9 @@
 				<table>
 
 					<tr height="40">
-						<td>작성자 : ${sessionScope.loginUser.useremail}<input type="hidden"
-							id="useremail" value="${sessionScope.loginUser.useremail}"
-							name="useremail"></td>
+						<td>작성자 : ${sessionScope.loginUser.useremail}<input
+							type="hidden" id="useremail"
+							value="${sessionScope.loginUser.useremail}" name="useremail"></td>
 						<td><input type="text" id="comment_content"
 							name="comment_content" required></td>
 						<td><input type="hidden" id="board_id"
@@ -86,18 +86,33 @@
 						<th>작성자</th>
 						<th>댓글 내용</th>
 						<th>등록일</th>
+						<th>수정</th>
+						<th>삭제</th>
 					</tr>
 
 					<c:if test="${not empty requestScope.commentsList}">
 						<c:forEach var="c" items="${requestScope.commentsList}">
+
 							<tr>
 								<td><a>${c.comment_id}</a></td>
 								<td><a>${c.useremail}</a></td>
-								<td><a>${c.comment_content}</a></td>
+								<td><span class="comment-content">${c.comment_content}</span>
+									<input type="text" class="edit-comment" style="display: none;"
+									value="${c.comment_content}"></td>
 								<td><a>${c.comment_regdate}</a></td>
+								<c:if test="${sessionScope.loginUser.useremail == c.useremail}">
+									<td>
+										<button data-idx="${c.comment_id}" class="edit-btn">수정</button>
+									</td>
+									<td>
+										<button data-idx="${c.comment_id}" class="delete-btn">삭제</button>
+									</td>
+								</c:if>
 							</tr>
+
 						</c:forEach>
 					</c:if>
+
 					<c:if test="${empty requestScope.commentsList}">
 						<tr>
 							<th colspan="4">내용물 없음</th>
