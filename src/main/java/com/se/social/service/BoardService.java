@@ -15,8 +15,6 @@ public interface BoardService {
 	// insert, update
 	public int save(Board entity);
 	
-	// 삭제 기능 (board_delyn 상태 변화시키기)
-	public void updateBoardDelyn(int board_id);
 	
 	// delete
 	public int delete(int board_id);

@@ -80,6 +80,7 @@
 				</table>
 			</form>
 			<div class="comments">
+			<form action="updateComments" method="post">
 				<table>
 					<tr>
 						<th>댓글 번호</th>
@@ -119,6 +120,7 @@
 						</tr>
 					</c:if>
 				</table>
+				</form>
 			</div>
 		</div>
 

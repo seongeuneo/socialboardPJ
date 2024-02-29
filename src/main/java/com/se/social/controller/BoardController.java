@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -219,6 +220,7 @@ public class BoardController {
 		// 데이터 저장이 성공한 경우 Referer 헤더의 값으로 리다이렉트
 		data.setComment_delyn("'N'");
 		data.setComment_regdate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+		data.setBoard_id(data.getBoard_id());
 
 		commentsService.save(data);
 
@@ -227,10 +229,27 @@ public class BoardController {
 
 	// 댓글 수정
 	@PostMapping("/updateComments")
-	public int updateComments(@RequestBody Comments data) {
-		data.setComment_content(data.getComment_content());
-		int result = commentsService.update(data); // commentsService에서 수정 로직을 호출하도록 변경
-		return result;
+	@ResponseBody
+	public String updateComments(@RequestParam("comment_id") int commentId,
+			@RequestParam("comment_content") String updatedContent,
+			HttpSession session, Model model) {
+		try {
+			// 댓글 엔티티를 불러와서 수정 메서드 호출
+			Comments comment = commentsService.selectDetail(commentId); // findById 메서드는 댓글 ID로 댓글을 찾는 메서드로 가정합니다.
+			if (comment != null) {
+				comment.setComment_content(updatedContent);
+				comment.setComment_moddate(
+						LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+				commentsService.save(comment); // 댓글을 저장하는 메서드로 가정합니다.
+				return "Success";
+			} else {
+				return "Fail"; // 댓글을 찾을 수 없는 경우
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("error", "댓글 업데이트에 실패했습니다.");
+			return "Error"; // 예외 발생 시
+		}
 	}
 
 }

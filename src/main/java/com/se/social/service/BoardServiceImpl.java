@@ -11,6 +11,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.se.social.domain.PageRequestDTO;
 import com.se.social.domain.PageResultDTO;
 import com.se.social.entity.Board;
+import com.se.social.entity.Comments;
 import com.se.social.entity.QBoard;
 import com.se.social.repository.BoardRepository;
 
@@ -79,14 +80,7 @@ public class BoardServiceImpl implements BoardService {
 		return entity.getBoard_id();
 	}
 	
-	// board_delyn 바꾸는 메서드
-	public void updateBoardDelyn(int board_id) {
-        Board board = repository.findById(board_id).orElse(null);
-        if (board != null) {
-            board.setBoard_delyn('Y');
-            repository.save(board);
-        }
-    }
+
 
 	// delete
 	@Override

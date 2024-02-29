@@ -2,6 +2,8 @@ package com.se.social.service;
 
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
 import com.querydsl.core.QueryResults;
@@ -36,6 +38,7 @@ public class CommentsServiceImpl implements CommentsService {
 	}
 
 	// selectDetail
+	@Override
 	public Comments selectDetail(int comment_id) {
 		Optional<Comments> result = repository.findById(comment_id);
 		if (result.isPresent()) {
@@ -46,6 +49,7 @@ public class CommentsServiceImpl implements CommentsService {
 	}
 
 	// insert, update
+	@Override
 	public int save(Comments entity) {
 		log.info("댓글 수정 시작, comment_id: {}", entity.getComment_id());
 
@@ -56,29 +60,18 @@ public class CommentsServiceImpl implements CommentsService {
 		return entity.getComment_id();
 	}
 
-	// update
-	@Override
-	public int update(Comments entity) {
-		log.info("댓글 수정 시작, comment_id: {}", entity.getComment_id());
-		Optional<Comments> existingComment = repository.findById(entity.getComment_id());
-
-		if (existingComment.isPresent()) {
-			Comments commentToUpdate = existingComment.get();
-
-			// 여기에서 수정할 필드들을 업데이트합니다.
-			commentToUpdate.setComment_content(entity.getComment_content());
-
-			// 그 외 필요한 필드들도 업데이트할 수 있습니다.
-
-			repository.save(commentToUpdate); // JpaRepository의 save 메소드를 사용하여 업데이트
-			return commentToUpdate.getComment_id();
-		} else {
-			log.error("댓글을 찾을 수 없습니다. comment_id: {}", entity.getComment_id());
-			return -1; // 예외 처리 또는 에러 처리를 하세요.
-		}
-	}
+	 @Override
+    @Transactional
+    public int updateCommentsContentByIdx(Integer commentId, String content) {
+        return (int) queryFactory
+                .update(comments)
+                .set(comments.comment_content, content)
+                .where(comments.comment_id.eq(commentId))
+                .execute();
+    }
 
 	// delete
+	@Override
 	public int delete(int comment_id) {
 		repository.deleteById(comment_id);
 		return comment_id;

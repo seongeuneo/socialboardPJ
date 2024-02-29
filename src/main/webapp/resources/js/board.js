@@ -43,51 +43,84 @@ function toggleLikes(board_id, useremail) {
 }
 
 // 댓글 수정
-$(document).on('click', '.edit-btn', function() {
-	let commentId = $(this).data('idx');
-	let contentSpan = $(`tr:has(button[data-idx="${commentId}"]) td span.comment-content`);
-	let contentInput = $(`tr:has(button[data-idx="${commentId}"]) td input.edit-comment`);
+    document.addEventListener('DOMContentLoaded', function () {
+        // 모든 수정 버튼에 이벤트 리스너 추가
+        var editButtons = document.querySelectorAll('.edit-btn');
+        editButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                // 부모 행 가져오기
+                var row = button.closest('tr');
 
-	// 현재 댓글 내용을 input에 설정
-	contentInput.val(contentSpan.text());
+                // span 및 input 요소의 표시 전환
+                var commentContentSpan = row.querySelector('.comment-content');
+                var editCommentInput = row.querySelector('.edit-comment');
+                commentContentSpan.style.display = 'none';
+                editCommentInput.style.display = 'block';
 
-	// span을 숨기고 input을 보이게 변경
-	contentSpan.hide();
-	contentInput.show();
+                // 버튼 텍스트를 '수정 완료'로 변경
+                button.textContent = '수정 완료';
+                // 버튼을 업데이트 버튼으로 식별하기 위해 클래스 변경
+                button.classList.add('update-btn');
 
-	// 수정 버튼을 수정 완료 버튼으로 변경
-	$(this).text('완료');
-	// 클래스를 'edit-btn'에서 'complete-btn'으로 변경 (이벤트 핸들러 변경)
-	$(this).removeClass('edit-btn').addClass('complete-btn');
-});
+                // 업데이트 버튼에 이벤트 리스너 추가
+                button.addEventListener('click', function () {
+                    // 입력에서 업데이트된 댓글 내용 가져오기
+                    var updatedComment = editCommentInput.value;
+
+                    // span의 내용 업데이트
+                    commentContentSpan.textContent = updatedComment;
+
+                    // span 및 input 요소의 표시 전환
+                    commentContentSpan.style.display = 'inline';
+                    editCommentInput.style.display = 'none';
+
+                    // 버튼 텍스트를 다시 '수정'으로 변경
+                    button.textContent = '수정';
+                    // 'update-btn' 클래스 제거
+                    button.classList.remove('update-btn');
+                });
+            });
+        });
+    });
 
 // 완료 버튼 클릭 시, 수정된 내용을 서버로 전송하여 업데이트
-$(document).on('click', '.complete-btn', function() {
-	let commentId = $(this).data('idx');
-	let contentInput = $(`tr:has(button[data-idx="${commentId}"]) td input.edit-comment`);
-	let url = "/board/updateComments";
+   document.addEventListener('DOMContentLoaded', function () {
+        var editButtons = document.querySelectorAll('.edit-btn');
+        editButtons.forEach(function (button) {
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
 
-	// 수정된 내용 서버로 전송
-	axios.post(url, {
-		"comment_id": commentId,
-		"content": contentInput.val()
-	})
-		.then(response => {
-			// 성공 시, 서버에서 온 데이터로 업데이트
-			// (서버에서 업데이트된 댓글 정보를 반환하는 것으로 가정)
-			let updatedContent = response.data.comment_content;
-			let contentSpan = $(`tr:has(button[data-idx="${commentId}"]) td span.comment-content`);
+                var row = button.closest('tr');
+                var commentContentSpan = row.querySelector('.comment-content');
+                var editCommentInput = row.querySelector('.edit-comment');
+                commentContentSpan.style.display = 'none';
+                editCommentInput.style.display = 'block';
+                button.textContent = '수정 완료';
+                button.classList.add('update-btn');
 
-			// span을 보이고 input을 숨기게 변경
-			contentSpan.text(updatedContent).show();
-			contentInput.hide();
+                button.addEventListener('click', function () {
+                    var updatedComment = editCommentInput.value;
+                    commentContentSpan.textContent = updatedComment;
+                    commentContentSpan.style.display = 'inline';
+                    editCommentInput.style.display = 'none';
+                    button.textContent = '수정';
+                    button.classList.remove('update-btn');
 
-			// 완료 버튼을 수정 버튼으로 변경
-			$(`.complete-btn[data-idx="${commentId}"]`).text('수정');
-			// 클래스를 'complete-btn'에서 'edit-btn'으로 변경 (이벤트 핸들러 변경)
-			$(`.complete-btn[data-idx="${commentId}"]`).removeClass('complete-btn').addClass('edit-btn');
-		})
-		.catch(error => {
-			alert('리뷰 수정 실패');
-		});
-});
+                    // Ajax를 사용하여 수정된 댓글을 서버로 전송
+                    var commentId = button.getAttribute('data-idx');
+
+                    updateCommentOnServer(commentId, updatedComment);
+                });
+            });
+        });
+
+        function updateCommentOnServer(commentId, updatedComment) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/board/updateComments', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+            // 수정된 댓글 데이터를 서버로 전송
+            var formData = 'comment_id=' + commentId + '&comment_content=' + encodeURIComponent(updatedComment);  
+            xhr.send(formData);
+        }
+    });
