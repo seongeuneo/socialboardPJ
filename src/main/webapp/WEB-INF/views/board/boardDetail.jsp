@@ -48,8 +48,8 @@
 		</table>
 		<c:if
 			test="${sessionScope.loginUser.useremail == requestScope.boardDetail.useremail}">
-			<div>
-				<a href="boardModify?board_id=${requestScope.boardDetail.board_id}">수정하기</a>
+			<div class="boardModify">
+				<a href="boardModify?board_id=${requestScope.boardDetail.board_id}">게시글 수정하기</a>
 			</div>
 		</c:if>
 		<div class="likes">
@@ -62,10 +62,10 @@
 		</div>
 		<div>
 			<form action="postComments" method="POST">
-				<table>
+				<table class="addComments">
 
 					<tr height="40">
-						<td>작성자 : ${sessionScope.loginUser.useremail}<input
+						<td class="boardWriter">작성자 : ${sessionScope.loginUser.useremail}<input
 							type="hidden" id="useremail"
 							value="${sessionScope.loginUser.useremail}" name="useremail"></td>
 						<td><input type="text" id="comment_content"
