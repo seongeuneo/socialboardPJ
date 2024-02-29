@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // 현재 버튼이 '수정' 상태일 때
                 commentContentSpan.style.display = 'none';
                 editCommentInput.style.display = 'block';
-                button.textContent = '수정 완료';
+                button.textContent = '완료';
                 button.classList.add('update-btn');
             }
         });
@@ -86,3 +86,44 @@ document.addEventListener('DOMContentLoaded', function () {
         xhr.send(formData);
     }
 });
+
+
+//댓글 삭제 
+// 삭제 버튼 클릭 시
+document.addEventListener('DOMContentLoaded', function () {
+    var deleteButtons = document.querySelectorAll('.delete-btn');
+    deleteButtons.forEach(function (button) {
+        button.addEventListener('click', function (event) {
+            event.preventDefault();
+            handleDeleteButtonClick(button);
+        });
+    });
+
+    function handleDeleteButtonClick(button) {
+        var commentId = button.getAttribute('data-idx');
+        deleteCommentOnServer(commentId);
+    }
+});
+
+function deleteCommentOnServer(commentId) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('DELETE', '/board/deleteComments?comment_id=' + commentId, true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+    // 삭제할 댓글의 ID를 서버로 전송
+    var formData = 'comment_id=' + commentId;
+    xhr.send(formData);
+
+    // 서버 응답 확인
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                console.log('댓글이 성공적으로 삭제되었습니다.');
+                // 삭제 성공 시 적절한 화면 갱신 로직 추가
+                    window.location.reload();
+            } else {
+                console.error('댓글 삭제에 실패했습니다.');
+            }
+        }
+    };
+}

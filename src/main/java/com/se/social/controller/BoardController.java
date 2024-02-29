@@ -251,5 +251,21 @@ public class BoardController {
 			return "Error"; // 예외 발생 시
 		}
 	}
+	
+	// 댓글 삭제
+	@DeleteMapping(value = "/deleteComments")
+	@ResponseBody
+	public ResponseEntity<?> deleteComment(@RequestParam("comment_id") int commentId) {
+		Comments entity = commentsService.selectDetail(commentId);
+
+		if (entity != null) {
+			entity.setComment_deldate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+			entity.setComment_delyn("'Y'");
+			commentsService.save(entity);
+		}
+
+		return ResponseEntity.ok().build();
+	}
+	
 
 }
