@@ -43,84 +43,46 @@ function toggleLikes(board_id, useremail) {
 }
 
 // 댓글 수정
-    document.addEventListener('DOMContentLoaded', function () {
-        // 모든 수정 버튼에 이벤트 리스너 추가
-        var editButtons = document.querySelectorAll('.edit-btn');
-        editButtons.forEach(function (button) {
-            button.addEventListener('click', function () {
-                // 부모 행 가져오기
-                var row = button.closest('tr');
+document.addEventListener('DOMContentLoaded', function () {
+    var editButtons = document.querySelectorAll('.edit-btn');
 
-                // span 및 input 요소의 표시 전환
-                var commentContentSpan = row.querySelector('.comment-content');
-                var editCommentInput = row.querySelector('.edit-comment');
-                commentContentSpan.style.display = 'none';
-                editCommentInput.style.display = 'block';
+    editButtons.forEach(function (button) {
+        button.addEventListener('click', function (event) {
+            event.preventDefault();
 
-                // 버튼 텍스트를 '수정 완료'로 변경
-                button.textContent = '수정 완료';
-                // 버튼을 업데이트 버튼으로 식별하기 위해 클래스 변경
-                button.classList.add('update-btn');
+            var row = button.closest('tr');
+            var commentContentSpan = row.querySelector('.comment-content');
+            var editCommentInput = row.querySelector('.edit-comment');
+            
+            if (button.classList.contains('update-btn')) {
+                // 현재 버튼이 '수정 완료' 상태일 때
+                var updatedComment = editCommentInput.value;
+                commentContentSpan.textContent = updatedComment;
+                commentContentSpan.style.display = 'inline';
+                editCommentInput.style.display = 'none';
+                button.textContent = '수정';
+                button.classList.remove('update-btn');
 
-                // 업데이트 버튼에 이벤트 리스너 추가
-                button.addEventListener('click', function () {
-                    // 입력에서 업데이트된 댓글 내용 가져오기
-                    var updatedComment = editCommentInput.value;
-
-                    // span의 내용 업데이트
-                    commentContentSpan.textContent = updatedComment;
-
-                    // span 및 input 요소의 표시 전환
-                    commentContentSpan.style.display = 'inline';
-                    editCommentInput.style.display = 'none';
-
-                    // 버튼 텍스트를 다시 '수정'으로 변경
-                    button.textContent = '수정';
-                    // 'update-btn' 클래스 제거
-                    button.classList.remove('update-btn');
-                });
-            });
-        });
-    });
-
-// 완료 버튼 클릭 시, 수정된 내용을 서버로 전송하여 업데이트
-   document.addEventListener('DOMContentLoaded', function () {
-        var editButtons = document.querySelectorAll('.edit-btn');
-        editButtons.forEach(function (button) {
-            button.addEventListener('click', function (event) {
-                event.preventDefault();
-
-                var row = button.closest('tr');
-                var commentContentSpan = row.querySelector('.comment-content');
-                var editCommentInput = row.querySelector('.edit-comment');
+                // Ajax를 사용하여 수정된 댓글을 서버로 전송
+                var commentId = button.getAttribute('data-idx');
+                updateCommentOnServer(commentId, updatedComment);
+            } else {
+                // 현재 버튼이 '수정' 상태일 때
                 commentContentSpan.style.display = 'none';
                 editCommentInput.style.display = 'block';
                 button.textContent = '수정 완료';
                 button.classList.add('update-btn');
-
-                button.addEventListener('click', function () {
-                    var updatedComment = editCommentInput.value;
-                    commentContentSpan.textContent = updatedComment;
-                    commentContentSpan.style.display = 'inline';
-                    editCommentInput.style.display = 'none';
-                    button.textContent = '수정';
-                    button.classList.remove('update-btn');
-
-                    // Ajax를 사용하여 수정된 댓글을 서버로 전송
-                    var commentId = button.getAttribute('data-idx');
-
-                    updateCommentOnServer(commentId, updatedComment);
-                });
-            });
+            }
         });
-
-        function updateCommentOnServer(commentId, updatedComment) {
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/board/updateComments', true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
-            // 수정된 댓글 데이터를 서버로 전송
-            var formData = 'comment_id=' + commentId + '&comment_content=' + encodeURIComponent(updatedComment);  
-            xhr.send(formData);
-        }
     });
+
+    function updateCommentOnServer(commentId, updatedComment) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/board/updateComments', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+        // 수정된 댓글 데이터를 서버로 전송
+        var formData = 'comment_id=' + commentId + '&comment_content=' + encodeURIComponent(updatedComment);  
+        xhr.send(formData);
+    }
+});
