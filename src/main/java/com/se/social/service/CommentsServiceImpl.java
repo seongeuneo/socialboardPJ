@@ -2,6 +2,7 @@ package com.se.social.service;
 
 import java.util.Optional;
 
+import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
@@ -60,15 +61,7 @@ public class CommentsServiceImpl implements CommentsService {
 		return entity.getComment_id();
 	}
 
-	 @Override
-    @Transactional
-    public int updateCommentsContentByIdx(Integer commentId, String content) {
-        return (int) queryFactory
-                .update(comments)
-                .set(comments.comment_content, content)
-                .where(comments.comment_id.eq(commentId))
-                .execute();
-    }
+	
 
 	// delete
 	@Override

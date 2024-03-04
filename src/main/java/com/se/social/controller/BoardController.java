@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.http.HttpHeaders;
@@ -23,20 +24,25 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.se.social.domain.LikesId;
 import com.se.social.domain.PageRequestDTO;
 import com.se.social.domain.PageResultDTO;
 import com.se.social.entity.Board;
 import com.se.social.entity.Comments;
 import com.se.social.entity.Likes;
+import com.se.social.entity.User;
+import com.se.social.repository.BoardRepository;
 import com.se.social.repository.LikesRepository;
 import com.se.social.service.BoardService;
 import com.se.social.service.CommentsService;
 import com.se.social.service.LikesService;
+import com.se.social.service.NoticeReply;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
@@ -51,6 +57,7 @@ public class BoardController {
 	private BoardService boardService;
 	private final LikesService likesService;
 	private final CommentsService commentsService;
+	private final BoardRepository boardRepository;
 
 	// List =====================================================
 	@GetMapping("/boardPage")
@@ -107,13 +114,18 @@ public class BoardController {
 	@GetMapping("/boardDetail")
 	public String getBoardDetail(@RequestParam("board_id") int board_id, Model model,
 			@RequestParam(value = "page", defaultValue = "1") int page) {
-		Board boardDetail = boardService.selectDetail(board_id);
-		model.addAttribute("boardDetail", boardDetail);
 
 		// 조회수
-		int currentViews = boardDetail.getBoard_views();
-		boardDetail.setBoard_views(currentViews + 1);
-		boardService.save(boardDetail);
+		  // board_id가 같은 경우에만 조회수 증가
+	    if (!model.containsAttribute("boardDetail")) {
+	        Board boardDetail = boardService.selectDetail(board_id);
+	        model.addAttribute("boardDetail", boardDetail);
+
+	        int currentViews = boardDetail.getBoard_views();
+	        boardDetail.setBoard_views(currentViews + 1);
+	        boardService.save(boardDetail);
+	    }
+
 
 		// 댓글
 		PageRequestDTO requestDTO = PageRequestDTO.builder().page(page).size(5).build();
@@ -215,8 +227,8 @@ public class BoardController {
 
 	// 댓글 쓰기
 	@PostMapping("/postComments")
-	public String insertComments(@ModelAttribute Comments data, HttpServletRequest request) {
-
+	public String insertComments(@ModelAttribute Comments data, @ModelAttribute Board board, HttpServletRequest request) {
+		
 		// 데이터 저장이 성공한 경우 Referer 헤더의 값으로 리다이렉트
 		data.setComment_delyn("'N'");
 		data.setComment_regdate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
@@ -265,6 +277,52 @@ public class BoardController {
 		}
 
 		return ResponseEntity.ok().build();
+	}
+	
+	// 대댓글
+	@PostMapping(value="/rinsert")
+	public String rInsert(Comments comment, HttpSession session) {
+		int m_num = (Integer) session.getAttribute("m_num");
+		int number = commentsService.maxNum(); // 새 댓글 번호 생성, ref는 nor_num이랑 똑같음
+
+		// ref 답변글끼리 뭉칠때, re_step 답변글 순서, re_level 들여쓰기
+		int nor_re_step = 0, nor_re_level = 0; // 첫번째 댓글은 0,0 기본 세팅
+		int no_num = comment.getBoard_id(); // 어떤 글에 댓글 썼는지 번호 가져오기(jsp에서 보냈음)
+		int nor_num = comment.getComment_id(); // 어떤 댓글에 댓글 남긴건지(jsp에서 보냈음)
+		String nor_content = comment.getComment_content(); // 댓글내용(jsp에서 보냈음)
+
+		if (nor_num != 0) { // 댓글에 댓글을 달 때
+			NoticeReply comment1 = commentsService.select(nor_num); // 읽어온 댓글의 re_step과 re_level을 알기 위해서
+			if (comment1.getNor_re_step() == 0 && comment1.getNor_re_level() == 0) {
+				comment.setNor_ref(nor_num); // 대댓글끼리 뭉치기위해, 부모댓글의 댓글번호로 ref 세팅
+				int maxStep = comments.maxStep(comment1.getNor_ref()); // 댓글중에서 새로운 댓글 달때 맨 밑으로 가기 위해서
+				comment.setNor_re_step(maxStep);
+				comment.setNor_re_level(comment1.getNor_re_level() + 1);
+			} else { // 댓글의 대댓글을 달 때
+				comment.setNor_ref(comment1.getNor_ref()); // 대댓글끼리 뭉치기위해, 부모댓글의 댓글번호로 ref 세팅
+				comment.setNor_re_step(comment1.getNor_re_step());
+				// 새로운 댓글은 사이에 껴야되기 때문에
+				commentsService.updateStep(comment); // 글을 읽고 ref가 같고 re_step이 읽은 글의 re_step보다 크면 그글의 re_step + 1
+
+				comment.setNor_ref(comment1.getNor_ref());
+				comment.setNor_re_step(comment1.getNor_re_step() + 1); // 댓글(읽은값)단 re_step보다 1 증가
+				comment.setNor_re_level(comment1.getNor_re_level() + 1); // 댓글(읽은값)단 re_level보다 1 증가
+			}
+		} else {
+			comment.setNor_ref(number);
+			comment.setNor_re_step(nor_re_step); // 기본 댓글에는 0세팅
+			comment.setNor_re_level(nor_re_level); // "
+		}
+
+		comment.setNor_content(nor_content);
+		comment.setNor_num(number);
+		comment.setNo_num(no_num);
+		comment.setM_num(m_num);
+
+		commentsService.insert(comment);
+
+		// 결과를 jsp로 보내지 않고 controller내에서 찾을 때 : redirect 또는 forward
+		return "redirect:/notice/noticeReplyList.do?no_num=" + comment.getNo_num();
 	}
 	
 

@@ -49,7 +49,8 @@
 		<c:if
 			test="${sessionScope.loginUser.useremail == requestScope.boardDetail.useremail}">
 			<div class="boardModify">
-				<a href="boardModify?board_id=${requestScope.boardDetail.board_id}">게시글 수정하기</a>
+				<a href="boardModify?board_id=${requestScope.boardDetail.board_id}">게시글
+					수정하기</a>
 			</div>
 		</c:if>
 		<div class="likes">
@@ -65,9 +66,11 @@
 				<table class="addComments">
 
 					<tr height="40">
-						<td class="boardWriter">작성자 : ${sessionScope.loginUser.useremail}<input
-							type="hidden" id="useremail"
-							value="${sessionScope.loginUser.useremail}" name="useremail"></td>
+						<td class="boardWriter">작성자 :
+							${sessionScope.loginUser.useremail}<input type="hidden"
+							id="useremail" value="${sessionScope.loginUser.useremail}"
+							name="useremail">
+						</td>
 						<td><input type="text" id="comment_content"
 							name="comment_content" required></td>
 						<td><input type="hidden" id="board_id"
@@ -80,47 +83,70 @@
 				</table>
 			</form>
 			<div class="comments">
-			<form action="updateComments" method="post">
-				<table>
-					<tr>
-						<th>댓글 번호</th>
-						<th>작성자</th>
-						<th>댓글 내용</th>
-						<th>등록일</th>
-						<th>수정</th>
-						<th>삭제</th>
-					</tr>
-
-					<c:if test="${not empty requestScope.commentsList}">
-						<c:forEach var="c" items="${requestScope.commentsList}">
-
-							<tr>
-								<td><a>${c.comment_id}</a></td>
-								<td><a>${c.useremail}</a></td>
-								<td><span class="comment-content">${c.comment_content}</span>
-									<input type="text" class="edit-comment" style="display: none;"
-									value="${c.comment_content}"></td>
-								<td><a>${c.comment_regdate}</a></td>
-								<c:if test="${sessionScope.loginUser.useremail == c.useremail}">
-									<td>
-										<button data-idx="${c.comment_id}" class="edit-btn">수정</button>
-									</td>
-									<td>
-										<button data-idx="${c.comment_id}" class="delete-btn">삭제</button>
-									</td>
-								</c:if>
-							</tr>
-
-						</c:forEach>
-					</c:if>
-
-					<c:if test="${empty requestScope.commentsList}">
+					<table>
 						<tr>
-							<th colspan="4">내용물 없음</th>
+							<th>댓글 번호</th>
+							<th>작성자</th>
+							<th>댓글 내용</th>
+							<th>등록일</th>
+							<c:if
+								test="${not empty requestScope.commentsList and not empty sessionScope.loginUser}">
+								<c:forEach var="c" items="${requestScope.commentsList}"
+									varStatus="loop">
+									<c:if
+										test="${sessionScope.loginUser.useremail == c.useremail and loop.index == 0}">
+										<th>수정</th>
+										<th>삭제</th>
+									</c:if>
+								</c:forEach>
+							</c:if>
+
+							<th>댓글달기</th>
 						</tr>
-					</c:if>
-				</table>
-				</form>
+
+						<c:if test="${not empty requestScope.commentsList}">
+							<c:forEach var="c" items="${requestScope.commentsList}">
+
+								<tr>
+									<td><a>${c.comment_id}</a></td>
+									<td><a>${c.useremail}</a></td>
+									<td><span class="comment-content">${c.comment_content}</span>
+										<input type="text" class="edit-comment" style="display: none;"
+										value="${c.comment_content}"></td>
+									<td><a>${c.comment_regdate}</a></td>
+									<c:if test="${sessionScope.loginUser.useremail == c.useremail}">
+										<td>
+											<button data-idx="${c.comment_id}" class="edit-btn">수정</button>
+										</td>
+										<td>
+											<button data-idx="${c.comment_id}" class="delete-btn">삭제</button>
+										</td>
+									</c:if>
+									<td><a id="reply-btn"
+										onclick="toggleReply(${c.comment_id})">답글달기</a></td>
+								</tr>
+									<tr id="reply-${c.comment_id}" style="display: none;"><td colspan="7">
+											<form action="commentReply" method="post">
+												<span>${sessionScope.loginUser.useremail}</span> <input
+													type="hidden" id="board_id" name="board_id"
+													value="${requestScope.boardDetail.board_id }" /> <input
+													type="hidden" id="useremail" name="useremail"
+													value="${sessionScope.loginUser.useremail }" /> <input
+													type="text" id="comment_content" name="comment_content"
+													placeholder="댓글을 입력해 주세요." maxlength="1000" required />
+												<button>등록</button>
+											</form>
+										</td></tr>
+
+							</c:forEach>
+						</c:if>
+
+						<c:if test="${empty requestScope.commentsList}">
+							<tr>
+								<th colspan="4">내용물 없음</th>
+							</tr>
+						</c:if>
+					</table>
 			</div>
 		</div>
 

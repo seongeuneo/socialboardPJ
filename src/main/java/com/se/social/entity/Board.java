@@ -1,11 +1,16 @@
 package com.se.social.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -55,4 +60,5 @@ public class Board {
 	@Column(name = "board_views", nullable = false)
 	@ColumnDefault("0")
 	private int board_views;
+	
 }
