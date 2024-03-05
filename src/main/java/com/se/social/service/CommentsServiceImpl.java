@@ -1,5 +1,6 @@
 package com.se.social.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
@@ -8,6 +9,7 @@ import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.dml.UpdateClause;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.se.social.domain.PageRequestDTO;
 import com.se.social.domain.PageResultDTO;
@@ -29,14 +31,16 @@ public class CommentsServiceImpl implements CommentsService {
 
 	// selectList
 	@Override
-	public PageResultDTO<Comments> selectList(PageRequestDTO requestDTO, int board_id) {
-		QueryResults<Comments> result = queryFactory.selectFrom(comments)
-				.where(comments.comment_delyn.eq("'N'").and(comments.board_id.eq(board_id)))
-				.offset(requestDTO.getPageable().getOffset()).limit(requestDTO.getPageable().getPageSize())
-				.fetchResults();
-
-		return new PageResultDTO<>(result, requestDTO.getPageable());
-	}
+    public PageResultDTO<Comments> selectList(PageRequestDTO requestDTO, int id){
+       QueryResults<Comments> result = queryFactory
+                .selectFrom(comments)
+                .where(comments.comment_delyn.eq("'N'").and(comments.board_id.eq(id)))
+                .orderBy(comments.comment_root.asc(),comments.comment_steps.asc())
+                .offset(requestDTO.getPageable().getOffset())
+                .limit(requestDTO.getPageable().getPageSize())
+                .fetchResults();
+       return new PageResultDTO<>(result, requestDTO.getPageable());
+    }
 
 	// selectDetail
 	@Override
@@ -61,7 +65,26 @@ public class CommentsServiceImpl implements CommentsService {
 		return entity.getComment_id();
 	}
 
+	// step을 위한 메서드
+	@Override
+    @Transactional
+    public void stepUpdate(Comments entity) {
+       UpdateClause update = queryFactory.update(comments)
+              .set(comments.comment_steps, comments.comment_steps.add(1))
+              .where(comments.comment_root.eq(entity.getComment_root())
+              .and(comments.comment_steps.goe(entity.getComment_steps()))
+              .and(comments.comment_id.ne(entity.getComment_id()))
+            );
+         update.execute();
+    }
 	
+	@Override
+	public List<Comments> getCommentsByCommentRoot(int commentRoot) {
+        return queryFactory
+                .selectFrom(comments)
+                .where(comments.comment_root.eq(commentRoot))
+                .fetch();
+    }
 
 	// delete
 	@Override

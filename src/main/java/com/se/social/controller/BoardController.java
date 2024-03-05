@@ -3,8 +3,11 @@ package com.se.social.controller;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -42,7 +45,6 @@ import com.se.social.repository.LikesRepository;
 import com.se.social.service.BoardService;
 import com.se.social.service.CommentsService;
 import com.se.social.service.LikesService;
-import com.se.social.service.NoticeReply;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
@@ -57,7 +59,6 @@ public class BoardController {
 	private BoardService boardService;
 	private final LikesService likesService;
 	private final CommentsService commentsService;
-	private final BoardRepository boardRepository;
 
 	// List =====================================================
 	@GetMapping("/boardPage")
@@ -110,13 +111,35 @@ public class BoardController {
 		return uri;
 	}
 
+	// 댓글 들여쓰기 
+	private List<Comments> addIndentation(List<Comments> commentsList) {
+	    List<Comments> indentedCommentsList = new ArrayList<>();
+
+	    for (Comments comment : commentsList) {
+	        // 기존 댓글 내용을 들여쓴 내용으로 수정
+	        StringBuilder indentedContent = new StringBuilder();
+	        for (int i = 0; i < comment.getComment_indent(); i++) {
+	            indentedContent.append("└ ");
+	        }
+	        indentedContent.append(comment.getComment_content());
+	        comment.setComment_content(indentedContent.toString());
+
+	        // 수정된 댓글을 목록에 추가
+	        indentedCommentsList.add(comment);
+	    }
+
+	    return indentedCommentsList;
+	}
+
+	
+	
 	// 게시글 상세 이동 (+댓글리스트 까지)
 	@GetMapping("/boardDetail")
 	public String getBoardDetail(@RequestParam("board_id") int board_id, Model model,
 			@RequestParam(value = "page", defaultValue = "1") int page) {
 
 		// 조회수
-		  // board_id가 같은 경우에만 조회수 증가
+		// board_id가 같은 경우에만 조회수 증가
 	    if (!model.containsAttribute("boardDetail")) {
 	        Board boardDetail = boardService.selectDetail(board_id);
 	        model.addAttribute("boardDetail", boardDetail);
@@ -130,9 +153,12 @@ public class BoardController {
 		// 댓글
 		PageRequestDTO requestDTO = PageRequestDTO.builder().page(page).size(5).build();
 		PageResultDTO<Comments> resultDTO = commentsService.selectList(requestDTO, board_id);
+		
+		// 댓글 목록에 들여쓰기 문자열 추가
+	    List<Comments> indentedCommentsList = addIndentation(resultDTO.getEntityList());
 
-		model.addAttribute("commentsList", resultDTO.getEntityList());
-		model.addAttribute("resultDTO", resultDTO);
+	    model.addAttribute("commentsList", indentedCommentsList);
+	    model.addAttribute("resultDTO", resultDTO);
 
 		return "board/boardDetail";
 	};
@@ -227,16 +253,20 @@ public class BoardController {
 
 	// 댓글 쓰기
 	@PostMapping("/postComments")
-	public String insertComments(@ModelAttribute Comments data, @ModelAttribute Board board, HttpServletRequest request) {
+	public String insertComments(RedirectAttributes rttr, Comments entity) {
 		
-		// 데이터 저장이 성공한 경우 Referer 헤더의 값으로 리다이렉트
-		data.setComment_delyn("'N'");
-		data.setComment_regdate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-		data.setBoard_id(data.getBoard_id());
-
-		commentsService.save(data);
-
-		return "redirect:boardDetail?board_id=" + data.getBoard_id();
+		try {
+	         entity.setComment_regdate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+	         entity.setComment_delyn("'N'");
+	         int newid = commentsService.save(entity);
+	            
+	         entity.setComment_root(newid);
+	         commentsService.save(entity);
+	      } catch (Exception e) {
+	         System.out.println("comment Insert Exception" + e.toString());         
+	      }
+	      
+	      return "redirect:/board/boardDetail?board_id="+entity.getBoard_id();
 	}
 
 	// 댓글 수정
@@ -280,50 +310,29 @@ public class BoardController {
 	}
 	
 	// 대댓글
-	@PostMapping(value="/rinsert")
-	public String rInsert(Comments comment, HttpSession session) {
-		int m_num = (Integer) session.getAttribute("m_num");
-		int number = commentsService.maxNum(); // 새 댓글 번호 생성, ref는 nor_num이랑 똑같음
-
-		// ref 답변글끼리 뭉칠때, re_step 답변글 순서, re_level 들여쓰기
-		int nor_re_step = 0, nor_re_level = 0; // 첫번째 댓글은 0,0 기본 세팅
-		int no_num = comment.getBoard_id(); // 어떤 글에 댓글 썼는지 번호 가져오기(jsp에서 보냈음)
-		int nor_num = comment.getComment_id(); // 어떤 댓글에 댓글 남긴건지(jsp에서 보냈음)
-		String nor_content = comment.getComment_content(); // 댓글내용(jsp에서 보냈음)
-
-		if (nor_num != 0) { // 댓글에 댓글을 달 때
-			NoticeReply comment1 = commentsService.select(nor_num); // 읽어온 댓글의 re_step과 re_level을 알기 위해서
-			if (comment1.getNor_re_step() == 0 && comment1.getNor_re_level() == 0) {
-				comment.setNor_ref(nor_num); // 대댓글끼리 뭉치기위해, 부모댓글의 댓글번호로 ref 세팅
-				int maxStep = comments.maxStep(comment1.getNor_ref()); // 댓글중에서 새로운 댓글 달때 맨 밑으로 가기 위해서
-				comment.setNor_re_step(maxStep);
-				comment.setNor_re_level(comment1.getNor_re_level() + 1);
-			} else { // 댓글의 대댓글을 달 때
-				comment.setNor_ref(comment1.getNor_ref()); // 대댓글끼리 뭉치기위해, 부모댓글의 댓글번호로 ref 세팅
-				comment.setNor_re_step(comment1.getNor_re_step());
-				// 새로운 댓글은 사이에 껴야되기 때문에
-				commentsService.updateStep(comment); // 글을 읽고 ref가 같고 re_step이 읽은 글의 re_step보다 크면 그글의 re_step + 1
-
-				comment.setNor_ref(comment1.getNor_ref());
-				comment.setNor_re_step(comment1.getNor_re_step() + 1); // 댓글(읽은값)단 re_step보다 1 증가
-				comment.setNor_re_level(comment1.getNor_re_level() + 1); // 댓글(읽은값)단 re_level보다 1 증가
-			}
-		} else {
-			comment.setNor_ref(number);
-			comment.setNor_re_step(nor_re_step); // 기본 댓글에는 0세팅
-			comment.setNor_re_level(nor_re_level); // "
-		}
-
-		comment.setNor_content(nor_content);
-		comment.setNor_num(number);
-		comment.setNo_num(no_num);
-		comment.setM_num(m_num);
-
-		commentsService.insert(comment);
-
-		// 결과를 jsp로 보내지 않고 controller내에서 찾을 때 : redirect 또는 forward
-		return "redirect:/notice/noticeReplyList.do?no_num=" + comment.getNo_num();
-	}
+	@PostMapping(value = "/ReplyInsert")
+	   public String postReplyInsert(RedirectAttributes rttr, Comments entity) {
+	      
+	      try {
+	         entity.setComment_regdate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+	         entity.setComment_delyn("'N'");
+	         
+	         Comments parents = commentsService.selectDetail(entity.getComment_root());
+	         entity.setComment_root(parents.getComment_root());
+	         entity.setComment_steps(entity.getComment_steps()+1);
+	         entity.setComment_indent(entity.getComment_indent()+1);
+	         commentsService.save(entity);
+	         System.out.println("****************"+entity);
+	         commentsService.stepUpdate(entity);
+	         
+	      } catch (Exception e) {
+	         System.out.println("comment Insert Exception" + e.toString());         
+	      }
+	      
+	      return "redirect:/board/boardDetail?board_id="+entity.getBoard_id();
+	   }
 	
+	
+
 
 }
