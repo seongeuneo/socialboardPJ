@@ -78,13 +78,6 @@ public class CommentsServiceImpl implements CommentsService {
          update.execute();
     }
 	
-	@Override
-	public List<Comments> getCommentsByCommentRoot(int commentRoot) {
-        return queryFactory
-                .selectFrom(comments)
-                .where(comments.comment_root.eq(commentRoot))
-                .fetch();
-    }
 
 	// delete
 	@Override

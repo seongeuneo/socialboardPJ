@@ -19,7 +19,6 @@ public interface CommentsService {
 	// 대댓글
 	public void stepUpdate(Comments entity); 
 	
-	List<Comments> getCommentsByCommentRoot(int commentRoot);
 
 	// delete
 	public int delete(int comment_id);
