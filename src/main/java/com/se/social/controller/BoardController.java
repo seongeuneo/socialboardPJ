@@ -111,28 +111,6 @@ public class BoardController {
 		return uri;
 	}
 
-	// 댓글 들여쓰기 
-	private List<Comments> addIndentation(List<Comments> commentsList) {
-	    List<Comments> indentedCommentsList = new ArrayList<>();
-
-	    for (Comments comment : commentsList) {
-	        // 기존 댓글 내용을 들여쓴 내용으로 수정
-	        StringBuilder indentedContent = new StringBuilder();
-	        for (int i = 0; i < comment.getComment_indent(); i++) {
-	            indentedContent.append("└ ");
-	        }
-	        indentedContent.append(comment.getComment_content());
-	        comment.setComment_content(indentedContent.toString());
-
-	        // 수정된 댓글을 목록에 추가
-	        indentedCommentsList.add(comment);
-	    }
-
-	    return indentedCommentsList;
-	}
-
-	
-	
 	// 게시글 상세 이동 (+댓글리스트 까지)
 	@GetMapping("/boardDetail")
 	public String getBoardDetail(@RequestParam("board_id") int board_id, Model model,
@@ -154,10 +132,8 @@ public class BoardController {
 		PageRequestDTO requestDTO = PageRequestDTO.builder().page(page).size(5).build();
 		PageResultDTO<Comments> resultDTO = commentsService.selectList(requestDTO, board_id);
 		
-		// 댓글 목록에 들여쓰기 문자열 추가
-	    List<Comments> indentedCommentsList = addIndentation(resultDTO.getEntityList());
 
-	    model.addAttribute("commentsList", indentedCommentsList);
+	    model.addAttribute("commentsList", resultDTO);
 	    model.addAttribute("resultDTO", resultDTO);
 
 		return "board/boardDetail";

@@ -41,13 +41,6 @@
 			<scope>provided</scope>
 		</dependency>
 
-	   <!-- aws배포를 위한 설정 -->
-      <dependency>
-           <groupId>org.springframework.boot</groupId>
-           <artifactId>spring-boot-starter-tomcat</artifactId>
-           <scope>provided</scope>
-      </dependency> 
-
       <dependency>
          <groupId>org.springframework.boot</groupId>
          <artifactId>spring-boot-devtools</artifactId>
