@@ -118,23 +118,21 @@ public class BoardController {
 
 		// 조회수
 		// board_id가 같은 경우에만 조회수 증가
-	    if (!model.containsAttribute("boardDetail")) {
-	        Board boardDetail = boardService.selectDetail(board_id);
-	        model.addAttribute("boardDetail", boardDetail);
+		if (!model.containsAttribute("boardDetail")) {
+			Board boardDetail = boardService.selectDetail(board_id);
+			model.addAttribute("boardDetail", boardDetail);
 
-	        int currentViews = boardDetail.getBoard_views();
-	        boardDetail.setBoard_views(currentViews + 1);
-	        boardService.save(boardDetail);
-	    }
-
+			int currentViews = boardDetail.getBoard_views();
+			boardDetail.setBoard_views(currentViews + 1);
+			boardService.save(boardDetail);
+		}
 
 		// 댓글
 		PageRequestDTO requestDTO = PageRequestDTO.builder().page(page).size(5).build();
 		PageResultDTO<Comments> resultDTO = commentsService.selectList(requestDTO, board_id);
-		
 
-	    model.addAttribute("commentsList", resultDTO);
-	    model.addAttribute("resultDTO", resultDTO);
+		model.addAttribute("commentsList", resultDTO.getEntityList());
+		model.addAttribute("resultDTO", resultDTO);
 
 		return "board/boardDetail";
 	};
@@ -230,27 +228,26 @@ public class BoardController {
 	// 댓글 쓰기
 	@PostMapping("/postComments")
 	public String insertComments(RedirectAttributes rttr, Comments entity) {
-		
+
 		try {
-	         entity.setComment_regdate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-	         entity.setComment_delyn("'N'");
-	         int newid = commentsService.save(entity);
-	            
-	         entity.setComment_root(newid);
-	         commentsService.save(entity);
-	      } catch (Exception e) {
-	         System.out.println("comment Insert Exception" + e.toString());         
-	      }
-	      
-	      return "redirect:/board/boardDetail?board_id="+entity.getBoard_id();
+			entity.setComment_regdate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+			entity.setComment_delyn("'N'");
+			int newid = commentsService.save(entity);
+
+			entity.setComment_root(newid);
+			commentsService.save(entity);
+		} catch (Exception e) {
+			System.out.println("comment Insert Exception" + e.toString());
+		}
+
+		return "redirect:/board/boardDetail?board_id=" + entity.getBoard_id();
 	}
 
 	// 댓글 수정
 	@PostMapping("/updateComments")
 	@ResponseBody
 	public String updateComments(@RequestParam("comment_id") int commentId,
-			@RequestParam("comment_content") String updatedContent,
-			HttpSession session, Model model) {
+			@RequestParam("comment_content") String updatedContent, HttpSession session, Model model) {
 		try {
 			// 댓글 엔티티를 불러와서 수정 메서드 호출
 			Comments comment = commentsService.selectDetail(commentId); // findById 메서드는 댓글 ID로 댓글을 찾는 메서드로 가정합니다.
@@ -269,7 +266,7 @@ public class BoardController {
 			return "Error"; // 예외 발생 시
 		}
 	}
-	
+
 	// 댓글 삭제
 	@DeleteMapping(value = "/deleteComments")
 	@ResponseBody
@@ -284,31 +281,28 @@ public class BoardController {
 
 		return ResponseEntity.ok().build();
 	}
-	
+
 	// 대댓글
 	@PostMapping(value = "/ReplyInsert")
-	   public String postReplyInsert(RedirectAttributes rttr, Comments entity) {
-	      
-	      try {
-	         entity.setComment_regdate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-	         entity.setComment_delyn("'N'");
-	         
-	         Comments parents = commentsService.selectDetail(entity.getComment_root());
-	         entity.setComment_root(parents.getComment_root());
-	         entity.setComment_steps(entity.getComment_steps()+1);
-	         entity.setComment_indent(entity.getComment_indent()+1);
-	         commentsService.save(entity);
-	         System.out.println("****************"+entity);
-	         commentsService.stepUpdate(entity);
-	         
-	      } catch (Exception e) {
-	         System.out.println("comment Insert Exception" + e.toString());         
-	      }
-	      
-	      return "redirect:/board/boardDetail?board_id="+entity.getBoard_id();
-	   }
-	
-	
+	public String postReplyInsert(RedirectAttributes rttr, Comments entity) {
 
+		try {
+			entity.setComment_regdate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+			entity.setComment_delyn("'N'");
+
+			Comments parents = commentsService.selectDetail(entity.getComment_root());
+			entity.setComment_root(parents.getComment_root());
+			entity.setComment_steps(entity.getComment_steps() + 1);
+			entity.setComment_indent(entity.getComment_indent() + 1);
+			commentsService.save(entity);
+			System.out.println("****************" + entity);
+			commentsService.stepUpdate(entity);
+
+		} catch (Exception e) {
+			System.out.println("comment Insert Exception" + e.toString());
+		}
+
+		return "redirect:/board/boardDetail?board_id=" + entity.getBoard_id();
+	}
 
 }

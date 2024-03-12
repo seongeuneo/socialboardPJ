@@ -1,5 +1,6 @@
 /* boardPage.css */
 
+/* 일반 스타일 */
 body {
     font-family: Arial, sans-serif;
     background-color: #f2f2f2;
@@ -7,36 +8,7 @@ body {
     padding: 0;
 }
 
-#wrap {
-    width: 80%;
-    margin: 20px auto;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-h2 {
-    color: #333;
-}
-
-/* 변경된 ul li 구조에 맞게 스타일 수정 */
-ul {
-    list-style: none;
-    padding: 0;
-}
-
-li {
-    margin-bottom: 20px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-}
-
-/* 테이블 스타일 수정 */
+/* 테이블 스타일 */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -52,18 +24,33 @@ th {
     background-color: #f2f2f2;
 }
 
-.likes {
-    margin-top: 20px;
+/* 링크 스타일 */
+a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
 }
 
-#likeButton {
-    color: #ff1493; /* Hot Pink color for like button */
+a:hover {
+    color: #4caf50;
 }
 
-.boardPage-link {
-    margin-top: 20px;
+/* 컨테이너 스타일 */
+#wrap {
+    width: 80%;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+/* 제목 스타일 */
+h2 {
+    color: #333;
+}
+
+/* 폼 스타일 */
 form {
     margin-top: 20px;
 }
@@ -76,34 +63,179 @@ input[type="text"] {
 
 button {
     padding: 8px 12px;
-    background-color: #4caf50; /* Green color for buttons */
+    background-color: #4caf50; /* 버튼의 녹색 색상 */
     color: #fff;
     border: none;
     cursor: pointer;
 }
 
-.home-link {
+/* 좋아요 섹션 스타일 */
+.likes {
     margin-top: 20px;
 }
 
-a {
-    text-decoration: none;
-    color: #333;
-    font-weight: bold;
+/* 댓글 섹션 스타일 */
+.comments {
+    width: 90%;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-top: 1px solid;
+    margin-top: 50px;
 }
 
-a:hover {
-    color: #4caf50;
+.addCommentsForm {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
+.addCommentsForm label, .addCommentsForm input, .addCommentsForm button {
+    margin: 5px;
+}
+
+.addCommentsForm input{
+	width: 60%;
+}
+
+ul.commentsList {
+    list-style: none;
+    padding: 0;
+}
+
+ul.commentsList li {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+ul.commentsList li span {
+    flex: 1;
+}
+
+ul.commentsList li .comment-content {
+    flex: 2;
+}
+
+ul.commentsList li .edit-comment {
+    flex: 0;
+}
+
+ul.commentsList li .comment-regdate {
+    margin-left: 0;
+}
+
+ul.commentsList li span.buttons {
+    display: flex;
+    justify-content: space-evenly;
+    flex: 1;
+}
+
+ul.commentsList li span.edit-delete {
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+}
+
+ul.commentsList li span.edit-delete button {
+    margin-right: 5px;
+}
+
+ul.commentsList li span.edit-comment {
+    display: none;
+}
+
+/* 수정 버튼 클릭 시에만 편집 상자를 표시하도록 추가 스타일을 설정합니다. */
+ul.commentsList li span.buttons .edit-btn:focus + .edit-comment,
+ul.commentsList li span.buttons .edit-comment:focus {
+    display: inline-block;
+}
+
+.commentsList > li:nth-child(n+2) {
+	  border: none;
+	  background-color: #f0f0f0;
+	  border-radius: 10px;
+	  padding: auto 10px;
+}
+
+/* 좋아요 버튼 스타일 */
+#likeButton {
+    color: #ff1493; /* 핫 핑크 색상을 사용한 좋아요 버튼 */
+}
+
+/* 게시판 페이지 링크 스타일 */
+.boardPage-link {
+    margin-top: 20px;
+}
+
+/* 홈 링크 스타일 */
+.home-link {
+    margin-top: 20px;
+    font-size: 30px;
+}
+
+/* 게시판 수정 및 페이지 스타일 */
 .boardModify, .pageNation {
     margin-top: 25px;
 }
 
+/* 가운데 정렬 스타일 */
 .likes, .boardModify, .boardPage-link, .addComments, .pageNation, .home-link {
     text-align: center;
 }
 
+/* Pagination Styles */
+.pageNation {
+    margin-top: 25px;
+    text-align: center;
+}
+
+.pageNation a, .pageNation span {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 0 3px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    text-decoration: none;
+    color: #333;
+}
+
+.pageNation a:hover {
+    background-color: #4caf50;
+    color: #fff;
+}
+
+.pageNation span strong {
+    background-color: #4caf50;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 3px;
+}
+
+/* First and Last Button Styles */
+.pageNation .firstB, .pageNation .lastB {
+    background-color: #333;
+    color: #fff;
+}
+
+/* Previous and Next Button Styles */
+.pageNation .ltB, .pageNation .gtB {
+    background-color: #ddd;
+}
+
+.pageNation .ltB:hover, .pageNation .gtB:hover {
+    background-color: #4caf50;
+    color: #fff;
+}
+
+
+/* 게시판 작성자 스타일 */
 .boardWriter {
     width: 25%;
 }
