@@ -41,4 +41,4 @@
 ---
 
 ## 🥸 회고
-[블로그 주소]([https://lsh424.tistory.com/](https://eocoring.tistory.com/category/Spring%20Boot))
+[블로그 주소]([https://lsh424.tistory.com/](https://eocoring.tistory.com/category/Spring%20Boot)
